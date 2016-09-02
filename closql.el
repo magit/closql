@@ -239,7 +239,14 @@
 
 (cl-defmethod emacsql ((connection closql-database) sql &rest args)
   (mapcar #'closql--extern-unbound
-          (apply #'cl-call-next-method connection sql args)))
+          (apply #'cl-call-next-method connection sql
+                 (mapcar (lambda (arg)
+                           (if (stringp arg)
+                               (let ((copy (copy-sequence arg)))
+                                 (set-text-properties 0 (length copy) nil copy)
+                                 copy)
+                             arg))
+                         args))))
 
 (cl-defmethod closql-insert ((db closql-database) obj)
   (aset obj 1 db)
