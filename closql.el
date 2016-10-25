@@ -4,7 +4,7 @@
 
 ;; Author: Jonas Bernoulli <jonas@bernoul.li>
 ;; Homepage: https://gitlab.com/tarsius/closql
-;; Package-Requires: ((emacs "25.0.92") (emacsql-sqlite "2.0.1"))
+;; Package-Requires: ((emacs "25.1") (emacsql-sqlite "2.0.1"))
 ;; Keywords: extensions
 
 ;; This file is not part of GNU Emacs.
