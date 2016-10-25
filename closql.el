@@ -225,14 +225,13 @@
       (dolist (slot (cddr slots))
         (let ((columns (closql--slot-get object-class slot :columns)))
           (when columns
-            (pcase-let ((`(,foreign ,key . ,rest) (cl-coerce columns 'list))
-                        (primkey (closql--slot-get object-class slot :primkey)))
+            (pcase-let ((`(,foreign ,key . ,rest) (cl-coerce columns 'list)))
               (emacsql
                db [:create-table $i1 $S2] slot
-               (list (vconcat (list (list foreign :not-null)
-                                    (if primkey key (list key :not-null)))
+               (list (vconcat `((,foreign :not-null)
+                                (,key     :not-null))
                               rest)
-                     (list :primary-key (or primkey (vector foreign key)))
+                     (list :primary-key (vector foreign key))
                      (list :foreign-key (vector foreign)
                            :references primary-table (vector primary-key)
                            :on-delete :cascade))))))))))
