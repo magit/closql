@@ -132,15 +132,52 @@
          (columns (closql--slot-get obj slot :columns)))
     (if columns
         (emacsql-with-transaction db
-          (emacsql db [:delete-from $i1 :where (= $i2 $s3)]
-                   slot (aref columns 0) object-id)
-          (if (atom (car value))
-              (dolist (val value)
-                (emacsql db [:insert-into $i1 :values [$s2 $s3]]
-                         slot object-id val))
-            (dolist (val value)
-              (emacsql db [:insert-into $i1 :values $v2]
-                       slot (vconcat (cons object-id val))))))
+          (setq columns (cl-coerce columns 'list))
+          ;; Caller might have modified value in place.
+          (closql--oset obj slot eieio-unbound)
+          (let ((list1 (closql-oref obj slot))
+                (list2 value)
+                elt1 elt2)
+            (when (= (length columns) 2)
+              (setq list1 (mapcar #'list list1))
+              (setq list2 (mapcar #'list list2)))
+            ;; `list2' may not be sorted at all and `list1' has to
+            ;; be sorted because Elisp and SQLite sort differently.
+            (setq list1 (cl-sort list1 'string< :key #'car))
+            (setq list2 (cl-sort list2 'string< :key #'car))
+            (while (progn (setq elt1 (car list1))
+                          (setq elt2 (car list2))
+                          (or elt1 elt2))
+              (let ((key1 (car elt1))
+                    (key2 (car elt2)))
+                (cond
+                 ((and elt1 (string< key1 key2))
+                  (apply #'emacsql db
+                         (vconcat
+                          [:delete-from $i1 :where]
+                          (closql--where-equal (cons object-id elt1) 1))
+                         slot
+                         (cl-mapcan #'list columns (cons object-id elt1)))
+                  (pop list1))
+                 ((string= key1 key2)
+                  (unless (equal elt1 elt2)
+                    (cl-mapcar
+                     (lambda (col val1 val2)
+                       (unless (equal val1 val2)
+                         (emacsql db [:update $i1 :set (= $i2 $s3)
+                                      :where (and (= $i4 $s5) (= $i6 $s7))]
+                                  slot col val2
+                                  (car  columns) object-id
+                                  (cadr columns) key2)))
+                     (cddr columns)
+                     (cdr  elt1)
+                     (cdr  elt2)))
+                  (pop list1)
+                  (pop list2))
+                 (t
+                  (emacsql db [:insert-into $i1 :values $v2]
+                           slot (vconcat (cons object-id elt2)))
+                  (pop list2)))))))
       (emacsql db [:update $i1 :set (= $i2 $s3) :where (= $i4 $s5)]
                primary-table slot
                (if (eq value eieio-unbound) 'eieio-unbound value)
@@ -345,6 +382,18 @@
   (dolist (child (eieio--class-children (cl--find-class class)))
     (setq result (closql--list-subclasses child result)))
   result)
+
+(defun closql--where-equal (value offset)
+  (vector
+   (cons 'and
+         (mapcar (lambda (v)
+                   (if v
+                       (list '=
+                             (intern (format "$i%i" (cl-incf offset)))
+                             (intern (format "$s%i" (cl-incf offset))))
+                     (list 'isnull
+                           (intern (format "$i%i" (1- (cl-incf offset 2)))))))
+                 value))))
 
 (defun closql--where-class-in (db classes)
   (vconcat
