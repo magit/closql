@@ -151,7 +151,7 @@
               (let ((key1 (car elt1))
                     (key2 (car elt2)))
                 (cond
-                 ((and elt1 (string< key1 key2))
+                 ((and elt1 (or (not elt2) (string< key1 key2)))
                   (apply #'emacsql db
                          (vconcat
                           [:delete-from $i1 :where]
