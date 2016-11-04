@@ -3,7 +3,7 @@
 ;; Copyright (C) 2016  Jonas Bernoulli
 
 ;; Author: Jonas Bernoulli <jonas@bernoul.li>
-;; Homepage: https://gitlab.com/tarsius/closql
+;; Homepage: https://gitlab.com/emacscollective/closql
 ;; Package-Requires: ((emacs "25.1") (emacsql-sqlite "2.0.2"))
 ;; Keywords: extensions
 

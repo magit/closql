@@ -15,4 +15,4 @@ Documentation will be written once the API has been stabilized.
 [eieio]:   https://www.gnu.org/software/emacs/manual/html_node/eieio/index.html
 [emacsql]: https://github.com/skeeto/emacsql
 [sqlite]:  https://www.sqlite.org
-[epkg]:    https://gitlab.com/tarsius/epkg
+[epkg]:    https://gitlab.com/emacscollective/epkg
