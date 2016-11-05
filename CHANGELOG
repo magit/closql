@@ -1,5 +1,21 @@
 # -*- mode: org -*-
 
-* 0.1.0    20160415
+* v0.3.1    2016/11/03
 
-  Initial public alpha release.
+- Fixed updating of rows in secondary tables when the key is ~nil~.
+
+* v0.3.0    2016/10/25
+
+- Setting the value of a slot whose value is stored in a secondary
+  table no longer deletes and recreates all rows.
+
+- ~closql--db-init~ no longer sets the primary key of secondary tables.
+
+* v0.2.0    2016/09/02
+
+- Text properties are now being removed when storing string in the
+  database.
+
+* v0.1.0    2016/04/15
+
+- Initial public alpha release.
