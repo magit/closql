@@ -1,5 +1,9 @@
 # -*- mode: org -*-
 
+* v0.3.2    2016/11/26
+
+- Update links.
+
 * v0.3.1    2016/11/03
 
 - Fixed updating of rows in secondary tables when the key is ~nil~.
