@@ -1,6 +1,6 @@
 ;;; closql.el --- store EIEIO objects using EmacSQL  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2016  Jonas Bernoulli
+;; Copyright (C) 2016-2017  Jonas Bernoulli
 
 ;; Author: Jonas Bernoulli <jonas@bernoul.li>
 ;; Homepage: https://github.com/emacscollective/closql
@@ -414,6 +414,16 @@
 
 (cl-defmethod closql--sql-to-class ((_db closql-database) value)
   value)
+
+(cl-defmethod closql--set-object-class ((db closql-database) obj class)
+  (let* ((primary-table (oref-default db primary-table))
+         (primary-key   (oref-default db primary-key))
+         (object-id (closql--oref obj primary-key)))
+    (aset obj 0 (intern (format "eieio-class-tag--%s" class)))
+    (emacsql db [:update $i1 :set (= class $s2) :where (= $i3 $s4)]
+             primary-table
+             (closql--class-to-sql db class)
+             primary-key object-id)))
 
 (provide 'closql)
 ;; Local Variables:
