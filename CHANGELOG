@@ -2,6 +2,14 @@
 
 * v0.4.0    UNRELEASED
 
+- Access information is now stored in slots of the object base class
+  instead of in the database class.  This change was necessary to
+  allow storing objects of different types in different tables.
+
+  The names of all of these slots are prefixed with ~closql-~.  The
+  existing slot ~database~ was renamed to ~closql-database~ and the slot
+  property ~:columns~ was renamed to ~:closql-columns~.
+
 - Class tags are now automatically abbreviated when being stored in
   the database because that gives friendlier results when querying it
   direct.

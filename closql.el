@@ -44,6 +44,10 @@
 (defclass closql-object ()
   ((closql-class-prefix  :initform nil :allocation :class)
    (closql-class-suffix  :initform nil :allocation :class)
+   (closql-table         :initform nil :allocation :class)
+   (closql-primary-key   :initform nil :allocation :class)
+   (closql-foreign-key   :initform nil :allocation :class)
+   (closql-foreign-table :initform nil :allocation :class)
    (closql-database      :initform nil :initarg :closql-database))
   :abstract t)
 
@@ -86,7 +90,7 @@
                                      :order-by [(asc $i3)]]
                                  (vconcat select) slot where
                                  (closql--oref
-                                  obj (oref-default db primary-key))))
+                                  obj (oref-default obj closql-primary-key))))
                   (aset obj c (if (= (length select) 1)
                                   (mapcar #'car value)
                                 value)))
@@ -123,9 +127,9 @@
       (aset obj c value))))
 
 (defun closql--dset (db obj slot value)
-  (let* ((table   (oref-default db primary-table))
-         (key     (oref-default db primary-key))
-         (id      (closql--oref obj primary-key))
+  (let* ((table   (oref-default obj closql-table))
+         (key     (oref-default obj closql-primary-key))
+         (id      (closql--oref obj key))
          (columns (closql--slot-get obj slot :columns)))
     (if columns
         (emacsql-with-transaction db
@@ -226,9 +230,7 @@
 ;;; Database
 
 (defclass closql-database (emacsql-sqlite-connection)
-  ((primary-table :allocation :class)
-   (primary-key   :allocation :class)
-   (object-class  :allocation :class)))
+  ((object-class :allocation :class)))
 
 (cl-defmethod closql-db ((class (subclass closql-database))
                          &optional variable file debug)
@@ -269,7 +271,7 @@
           (closql--oset obj slot eieio-unbound))))
     (emacsql-with-transaction db
       (emacsql db [:insert-into $i1 :values $v2]
-               (oref-default db primary-table)
+               (oref-default obj closql-table)
                (let ((value (closql--intern-unbound (cl-coerce obj 'list))))
                  (vconcat (cons (closql--abbrev-class (car value))
                                 (cddr value)))))
@@ -277,31 +279,36 @@
         (closql--dset db obj slot value))))
   obj)
 
-(cl-defmethod closql-delete ((db closql-database) (obj closql-object))
-  (closql-delete db (eieio-oref obj (oref-default db primary-key))))
+(cl-defmethod closql-delete ((obj closql-object))
+  (let ((key (oref-default obj closql-primary-key)))
+    (emacsql (closql--oref obj 'closql-database)
+             [:delete-from $i1 :where (= $i2 $s3)]
+             (oref-default obj closql-table)
+             key
+             (closql--oref obj key))))
 
-(cl-defmethod closql-delete ((db closql-database) ident)
-  (emacsql db [:delete-from $i1 :where (= $i2 $s3)]
-           (oref-default db primary-table)
-           (oref-default db primary-key)
-           ident))
-
-(cl-defmethod closql-get ((db closql-database) ident)
+(cl-defmethod closql-get ((db closql-database) ident &optional class)
+  (unless class
+    (setq class (oref-default db object-class)))
   (let ((row (car (emacsql db [:select * :from $i1
                                :where (= $i2 $s3)
                                :order-by [(asc $i2)]]
-                           (oref-default db primary-table)
-                           (oref-default db primary-key)
+                           (oref-default class closql-table)
+                           (oref-default class closql-primary-key)
                            ident))))
     (and row
-         (closql--remake-instance (oref-default db object-class) db row t))))
+         (closql--remake-instance class db row t))))
 
-(cl-defmethod closql-entries ((db closql-database) &optional pred)
+(cl-defmethod closql-entries ((db closql-database) &optional pred class)
+  (unless class
+    (setq class (oref-default db object-class)))
   (mapcar (lambda (row)
-            (closql--remake-instance (oref-default db object-class) db row))
-          (closql-select db '* pred)))
+            (closql--remake-instance class db row))
+          (closql-select db '* pred class)))
 
-(cl-defmethod closql-select ((db closql-database) select &optional pred)
+(cl-defmethod closql-select ((db closql-database) select &optional pred class)
+  (unless class
+    (setq class (oref-default db object-class)))
   (emacsql db
            (vconcat (if (eq select '*)
                         [:select * :from $i2]
@@ -310,9 +317,9 @@
                          [:where class :in $v3])
                     [:order-by [(asc $i4)]])
            select
-           (oref-default db primary-table)
+           (oref-default class closql-table)
            (and pred (closql-where-class-in pred))
-           (oref-default db primary-key)))
+           (oref-default class closql-primary-key)))
 
 ;;; Object/Row Conversion
 
@@ -408,9 +415,9 @@
     (sort (types class) #'string<)))
 
 (cl-defmethod closql--set-object-class ((db closql-database) obj class)
-  (let* ((table (oref-default db primary-table))
-         (key   (oref-default db primary-key))
-         (id    (closql--oref obj primary-key)))
+  (let* ((table (oref-default obj closql-table))
+         (key   (oref-default obj closql-primary-key))
+         (id    (closql--oref obj key)))
     (aset obj 0 (intern (format "eieio-class-tag--%s" class)))
     (emacsql db [:update $i1 :set (= class $s2) :where (= $i3 $s4)]
              table
