@@ -42,7 +42,7 @@
 ;;; Objects
 
 (defclass closql-object ()
-  ((database :initarg :database))
+  ((closql-database :initarg :closql-database))
   :abstract t)
 
 ;;;; Oref
@@ -76,7 +76,7 @@
             (columns (closql--slot-get obj slot :columns)))
         (if columns
             (if (eq value eieio-unbound)
-                (pcase-let ((db (closql--oref obj 'database))
+                (pcase-let ((db (closql--oref obj 'closql-database))
                             (`(,where . ,select) (cl-coerce columns 'list)))
                   (setq value
                         (emacsql db [:select $i1 :from $i2
@@ -114,8 +114,8 @@
                    (aset (eieio--class-class-allocation-values class) c value))
           (slot-missing obj slot 'oset value))
       (eieio--validate-slot-value class c value slot)
-      (unless (eq slot 'database)
-        (let ((db (closql--oref obj 'database)))
+      (unless (eq slot 'closql-database)
+        (let ((db (closql--oref obj 'closql-database)))
           (unless (or (not db) (eq db eieio-unbound))
             (closql--dset db obj slot value))))
       (aset obj c value))))
