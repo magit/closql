@@ -319,22 +319,22 @@
     (and row
          (closql--remake-instance (oref-default db object-class) db row t))))
 
-(cl-defmethod closql-entries ((db closql-database) &optional classes)
+(cl-defmethod closql-entries ((db closql-database) &optional pred)
   (mapcar (lambda (row)
             (closql--remake-instance (oref-default db object-class) db row))
-          (closql-select db '* classes)))
+          (closql-select db '* pred)))
 
-(cl-defmethod closql-select ((db closql-database) select &optional classes)
+(cl-defmethod closql-select ((db closql-database) select &optional pred)
   (emacsql db
            (vconcat (if (eq select '*)
                         [:select * :from $i2]
                       [:select $i1 :from $i2])
-                    (and classes
+                    (and pred
                          [:where class :in $v3])
                     [:order-by [(asc $i4)]])
            select
            (oref-default db primary-table)
-           (and classes (closql-where-class-in classes))
+           (and pred (closql-where-class-in pred))
            (oref-default db primary-key)))
 
 ;;; Object/Row Conversion
