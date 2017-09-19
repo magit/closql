@@ -33,6 +33,11 @@
   object slots ~closql-class-prefix~ and ~closql-class-suffix~ instead of
   having to define methods for these subclasses.
 
+- Added new functions ~closql-query~.  It calls either ~closql-entries~
+  or if its ~select~ argument is non-nil ~closql-select~.  If ~select~ is a
+  symbol, then return a list of elements, unlike ~closql-select~, which
+  would return a list of lists with one element each.
+
 - The function ~closql--where-class-in~ isn't merely intended for
   internal use anymore and was renamed to ~closql-where-in-class~.
 

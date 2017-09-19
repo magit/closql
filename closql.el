@@ -319,6 +319,14 @@
     (and row
          (closql--remake-instance class db row t))))
 
+(cl-defmethod closql-query ((db closql-database) &optional select pred class)
+  (if select
+      (let ((value (closql-select db select pred class)))
+        (if (and select (symbolp select))
+            (mapcar #'car value)
+          value))
+    (closql-entries db pred class)))
+
 (cl-defmethod closql-entries ((db closql-database) &optional pred class)
   (unless class
     (setq class (oref-default db object-class)))
