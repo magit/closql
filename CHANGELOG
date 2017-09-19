@@ -7,6 +7,8 @@
 
 - The internal function ~closql--oref-default~ was removed.
 
+- The function signature of ~closql--remake-instance~ changed.
+
 * v0.3.3    2016/12/31
 
 - Repository moved to https://github.com/emacscollective/closql.
