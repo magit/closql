@@ -1,6 +1,6 @@
 # -*- mode: org -*-
 
-* v0.4.0    UNRELEASED
+* v0.4.0    2017/09/19
 
 - The value of a slot can now be a list of objects.  Like for a slot
   whose value is a list of lists, the elements have to be uniform, in
