@@ -42,7 +42,9 @@
 ;;; Objects
 
 (defclass closql-object ()
-  ((closql-database :initarg :closql-database))
+  ((closql-class-prefix  :initform nil :allocation :class)
+   (closql-class-suffix  :initform nil :allocation :class)
+   (closql-database      :initform nil :initarg :closql-database))
   :abstract t)
 
 ;;;; Oref
@@ -292,8 +294,7 @@
       (emacsql db [:insert-into $i1 :values $v2]
                (oref-default db primary-table)
                (let ((value (closql--intern-unbound (cl-coerce obj 'list))))
-                 (vconcat (cons (closql--class-to-sql (eieio-object-class obj)
-                                                      (car value))
+                 (vconcat (cons (closql--abbrev-class (car value))
                                 (cddr value)))))
       (pcase-dolist (`(,slot . ,value) alist)
         (closql--dset db obj slot value))))
@@ -336,11 +337,13 @@
            (and classes (closql-where-class-in classes))
            (oref-default db primary-key)))
 
+;;; Object/Row Conversion
+
 (cl-defmethod closql--remake-instance ((class (subclass closql-object))
                                        db row &optional resolve)
   (pcase-let ((`(,abbrev . ,rest)
                (closql--extern-unbound row)))
-    (let ((obj (vconcat (list (closql--sql-to-class class abbrev)
+    (let ((obj (vconcat (list (closql--expand-abbrev class abbrev)
                               db)
                         rest)))
       (when resolve
@@ -363,6 +366,23 @@
             (if (eq elt 'eieio-unbound) eieio-unbound elt))
           row))
 
+(cl-defmethod closql--abbrev-class ((class-tag symbol))
+  (closql--abbrev-class (intern (substring (symbol-name class-tag) 17))))
+
+(cl-defmethod closql--abbrev-class ((class (subclass closql-object)))
+  (let ((name (symbol-name class))
+        (prefix (oref-default class closql-class-prefix))
+        (suffix (oref-default class closql-class-suffix)))
+    (intern (substring name
+                       (if prefix    (length prefix)    0)
+                       (if suffix (- (length suffix)) nil)))))
+
+(cl-defmethod closql--expand-abbrev ((class (subclass closql-object)) abbrev)
+  (intern (concat "eieio-class-tag--"
+                  (oref-default class closql-class-prefix)
+                  (symbol-name abbrev)
+                  (oref-default class closql-class-suffix))))
+
 (defun closql--list-subclasses (class &optional result)
   (unless (class-abstract-p class)
     (cl-pushnew class result))
@@ -384,7 +404,7 @@
 
 (defun closql-where-class-in (classes)
   (vconcat
-   (mapcar 'closql--class-to-sql
+   (mapcar 'closql--abbrev-class
            (cl-mapcan (lambda (sym)
                         (let ((str (symbol-name sym)))
                           (cond ((string-match-p "--eieio-childp\\'" str)
@@ -396,12 +416,6 @@
                                  (list sym)))))
                       (if (listp classes) classes (list classes))))))
 
-(cl-defmethod closql--class-to-sql ((class (subclass closql-object)))
-  class)
-
-(cl-defmethod closql--sql-to-class ((_class (subclass closql-object)) abbrev)
-  abbrev)
-
 (cl-defmethod closql--set-object-class ((db closql-database) obj class)
   (let* ((primary-table (oref-default db primary-table))
          (primary-key   (oref-default db primary-key))
@@ -409,7 +423,7 @@
     (aset obj 0 (intern (format "eieio-class-tag--%s" class)))
     (emacsql db [:update $i1 :set (= class $s2) :where (= $i3 $s4)]
              primary-table
-             (closql--class-to-sql db class)
+             (closql--abbrev-class class)
              primary-key object-id)))
 
 (provide 'closql)

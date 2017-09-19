@@ -2,6 +2,18 @@
 
 * v0.4.0    UNRELEASED
 
+- Class tags are now automatically abbreviated when being stored in
+  the database because that gives friendlier results when querying it
+  direct.
+
+  It was already possible to do that before by implementing the
+  generic functions ~closql--class-to-sql~ and ~closql--sql-to-class~.
+  These functions were replaced by the functions ~closql--abbrev-class~
+  and ~closql--expand-abbrev~, which have different signatures and allow
+  subclasses to strip a common prefix and/or suffix by setting the
+  object slots ~closql-class-prefix~ and ~closql-class-suffix~ instead of
+  having to define methods for these subclasses.
+
 - The function ~closql--where-class-in~ isn't merely intended for
   internal use anymore and was renamed to ~closql-where-in-class~.
 
