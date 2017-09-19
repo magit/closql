@@ -197,7 +197,7 @@
                            :key #'cl--slot-descriptor-name))))
     (and s (cdr (assoc prop (cl--slot-descriptor-props s))))))
 
-(defconst closql--slot-properties '(:columns :primkey))
+(defconst closql--slot-properties '(:columns))
 
 (defun eieio-defclass-internal--set-closql-slot-props
     (cname _superclasses slots _options)
