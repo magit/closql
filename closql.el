@@ -245,30 +245,7 @@
           (set variable db))
         db)))
 
-(cl-defmethod closql--db-init ((db closql-database))
-  (let* ((table (oref-default db primary-table))
-         (key   (oref-default db primary-key))
-         (class (oref-default db object-class))
-         (slots (mapcar #'cl--slot-descriptor-name
-                        (eieio--class-slots (cl--find-class class)))))
-    (emacsql-with-transaction db
-      (emacsql db [:create-table $i1 $S2] table
-               (list (vconcat (list (list 'class :not-null)
-                                    (list key :not-null :primary-key))
-                              (cddr slots))))
-      (dolist (slot (cddr slots))
-        (let ((columns (closql--slot-get class slot :columns)))
-          (when columns
-            (pcase-let ((`(,foreign ,skey . ,rest) (cl-coerce columns 'list)))
-              (emacsql
-               db [:create-table $i1 $S2] slot
-               (list (vconcat `((,foreign :not-null)
-                                (,skey    :not-null))
-                              rest)
-                     (list :primary-key (vector foreign skey))
-                     (list :foreign-key (vector foreign)
-                           :references table (vector key)
-                           :on-delete :cascade))))))))))
+(cl-defgeneric closql--db-init (db))
 
 (cl-defmethod emacsql ((connection closql-database) sql &rest args)
   (mapcar #'closql--extern-unbound
