@@ -416,6 +416,20 @@
     (setq result (closql--list-subclasses child result)))
   result)
 
+(cl-defmethod closql--list-subabbrevs ((class (subclass closql-object))
+                                       &optional wildcards)
+  (cl-labels
+      ((types
+        (class)
+        (let ((children (eieio--class-children (cl--find-class class)))
+              ;; An abstract base-class may violate its own naming rules.
+              (abbrev (ignore-errors (closql--abbrev-class class))))
+          (nconc (and (not (class-abstract-p class)) (list abbrev))
+                 (and wildcards children
+                      (list (if abbrev (intern (format "%s*" abbrev)) '*)))
+                 (cl-mapcan #'types children)))))
+    (sort (types class) #'string<)))
+
 (cl-defmethod closql--set-object-class ((db closql-database) obj class)
   (let* ((primary-table (oref-default db primary-table))
          (primary-key   (oref-default db primary-key))

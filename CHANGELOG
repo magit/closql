@@ -17,6 +17,8 @@
 - The function ~closql--where-class-in~ isn't merely intended for
   internal use anymore and was renamed to ~closql-where-in-class~.
 
+- Added new internal function ~closql--list-subbrevs~.
+
 - The internal function ~closql--oref-default~ was removed.
 
 - The function signature of ~closql--remake-instance~ changed.
