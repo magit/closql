@@ -383,13 +383,6 @@
                   (symbol-name abbrev)
                   (oref-default class closql-class-suffix))))
 
-(defun closql--list-subclasses (class &optional result)
-  (unless (class-abstract-p class)
-    (cl-pushnew class result))
-  (dolist (child (eieio--class-children (cl--find-class class)))
-    (setq result (closql--list-subclasses child result)))
-  result)
-
 (defun closql--where-equal (value offset)
   (vector
    (cons 'and
@@ -415,6 +408,13 @@
                                 (t
                                  (list sym)))))
                       (if (listp classes) classes (list classes))))))
+
+(defun closql--list-subclasses (class &optional result)
+  (unless (class-abstract-p class)
+    (cl-pushnew class result))
+  (dolist (child (eieio--class-children (cl--find-class class)))
+    (setq result (closql--list-subclasses child result)))
+  result)
 
 (cl-defmethod closql--set-object-class ((db closql-database) obj class)
   (let* ((primary-table (oref-default db primary-table))
