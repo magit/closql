@@ -2,6 +2,17 @@
 
 * v0.4.0    UNRELEASED
 
+- The value of a slot can now be a list of objects.  Like for a slot
+  whose value is a list of lists, the elements have to be uniform, in
+  this case they have to share a base-class, and they are unordered.
+
+  Objects in such secondary tables can be queried directly, using the
+  same functions that are used to query objects in the primary table.
+  For secondary tables the new optional ~class~ argument of these query
+  functions has to be provided.
+
+  Note that ~oset~ currently does not support "list of objects" slots.
+
 - Access information is now stored in slots of the object base class
   instead of in the database class.  This change was necessary to
   allow storing objects of different types in different tables.
