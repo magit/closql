@@ -280,7 +280,7 @@
                          args))))
 
 (cl-defmethod closql-insert ((db closql-database) obj)
-  (aset obj 1 db)
+  (closql--oset obj 'closql-database db)
   (let (alist)
     (dolist (slot (eieio-class-slots (eieio--object-class obj)))
       (setq  slot (cl--slot-descriptor-name slot))
