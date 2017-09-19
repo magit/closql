@@ -323,32 +323,20 @@
 
 (cl-defmethod closql-entries ((db closql-database) &optional classes)
   (mapcar (apply-partially #'closql--remake-instance db)
-          (let ((primary-table (closql--oref-default db 'primary-table))
-                (primary-key   (closql--oref-default db 'primary-key)))
-            (if classes
-                (emacsql db [:select * :from $i1
-                             :where class :in $v2
-                             :order-by [(asc $i3)]]
-                         primary-table
-                         (closql--where-class-in db classes)
-                         primary-key)
-              (emacsql db [:select * :from $i1
-                           :order-by [(asc $i2)]]
-                       primary-table primary-key)))))
+          (closql-select db '* classes)))
 
 (cl-defmethod closql-select ((db closql-database) select &optional classes)
-  (let ((primary-table (closql--oref-default db 'primary-table))
-        (primary-key   (closql--oref-default db 'primary-key)))
-    (if classes
-        (emacsql db [:select $i1 :from $i2
-                     :where class :in $v3
-                     :order-by [(asc $i4)]]
-                 select primary-table
-                 (closql--where-class-in db classes)
-                 primary-key)
-      (emacsql db [:select $i1 :from $i2
-                   :order-by [(asc $i3)]]
-               select primary-table primary-key))))
+  (emacsql db
+           (vconcat (if (eq select '*)
+                        [:select * :from $i2]
+                      [:select $i1 :from $i2])
+                    (and classes
+                         [:where class :in $v3])
+                    [:order-by [(asc $i4)]])
+           select
+           (closql--oref-default db 'primary-table)
+           (and classes (closql--where-class-in db classes))
+           (closql--oref-default db 'primary-key)))
 
 (cl-defmethod closql--remake-instance ((db closql-database) row &optional resolve)
   (pcase-let ((`(,class . ,rest)
