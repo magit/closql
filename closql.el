@@ -330,7 +330,7 @@
                     [:order-by [(asc $i4)]])
            select
            (oref-default db primary-table)
-           (and classes (closql--where-class-in db classes))
+           (and classes (closql-where-class-in db classes))
            (oref-default db primary-key)))
 
 (cl-defmethod closql--remake-instance ((db closql-database) row &optional resolve)
@@ -378,7 +378,7 @@
                            (intern (format "$i%i" (1- (cl-incf offset 2)))))))
                  value))))
 
-(defun closql--where-class-in (db classes)
+(defun closql-where-class-in (db classes)
   (vconcat
    (mapcar (apply-partially #'closql--class-to-sql db)
            (cl-mapcan (lambda (sym)

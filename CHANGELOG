@@ -2,6 +2,9 @@
 
 * v0.4.0    UNRELEASED
 
+- The function ~closql--where-class-in~ isn't merely intended for
+  internal use anymore and was renamed to ~closql-where-in-class~.
+
 - The internal function ~closql--oref-default~ was removed.
 
 * v0.3.3    2016/12/31
