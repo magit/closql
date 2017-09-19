@@ -79,7 +79,7 @@
           (slot-missing obj slot 'oref))
       (cl-check-type obj eieio-object)
       (let ((value (aref obj c))
-            (columns (closql--slot-get obj slot :columns)))
+            (columns (closql--slot-get obj slot :closql-columns)))
         (if columns
             (if (eq value eieio-unbound)
                 (pcase-let ((db (closql--oref obj 'closql-database))
@@ -130,7 +130,7 @@
   (let* ((table   (oref-default obj closql-table))
          (key     (oref-default obj closql-primary-key))
          (id      (closql--oref obj key))
-         (columns (closql--slot-get obj slot :columns)))
+         (columns (closql--slot-get obj slot :closql-columns)))
     (if columns
         (emacsql-with-transaction db
           (setq columns (cl-coerce columns 'list))
@@ -198,7 +198,7 @@
                            :key #'cl--slot-descriptor-name))))
     (and s (cdr (assoc prop (cl--slot-descriptor-props s))))))
 
-(defconst closql--slot-properties '(:columns))
+(defconst closql--slot-properties '(:closql-columns))
 
 (defun eieio-defclass-internal--set-closql-slot-props
     (cname _superclasses slots _options)
@@ -265,7 +265,7 @@
   (let (alist)
     (dolist (slot (eieio-class-slots (eieio--object-class obj)))
       (setq  slot (cl--slot-descriptor-name slot))
-      (let ((columns (closql--slot-get obj slot :columns)))
+      (let ((columns (closql--slot-get obj slot :closql-columns)))
         (when columns
           (push (cons slot (closql-oref obj slot)) alist)
           (closql--oset obj slot eieio-unbound))))
