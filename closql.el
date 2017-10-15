@@ -292,9 +292,14 @@
     (emacsql-with-transaction db
       (emacsql db [:insert-into $i1 :values $v2]
                (oref-default obj closql-table)
-               (let ((value (closql--intern-unbound (cl-coerce obj 'list))))
-                 (vconcat (cons (closql--abbrev-class (car value))
-                                (cddr value)))))
+               (pcase-let ((`(,class ,_db . ,values)
+                            (closql--intern-unbound
+                             (closql--coerce obj 'list))))
+                 (vconcat (cons (closql--abbrev-class
+                                 (if (fboundp 'record)
+                                     (eieio--class-name class)
+                                   class))
+                                values))))
       (pcase-dolist (`(,slot . ,value) alist)
         (closql--dset db obj slot value))))
   obj)
@@ -353,14 +358,22 @@
 
 (cl-defmethod closql--remake-instance ((class (subclass closql-object))
                                        db row &optional resolve)
-  (pcase-let ((`(,abbrev . ,rest)
+  (pcase-let ((`(,abbrev . ,values)
                (closql--extern-unbound row)))
-    (let ((obj (vconcat (list (closql--expand-abbrev class abbrev)
-                              db)
-                        rest)))
+    (let* ((class-sym (closql--expand-abbrev class abbrev))
+           (this (if (fboundp 'record)
+                     (let* ((class-obj (eieio--class-object class-sym))
+                            (obj (copy-sequence
+                                  (eieio--class-default-object-cache
+                                   class-obj))))
+                       (setq values (apply #'vector (cons db values)))
+                       (dotimes (i (length (eieio--class-slots class-obj)))
+                         (aset obj (1+ i) (aref values i)))
+                       obj)
+                   (vconcat (list class-sym db) values))))
       (when resolve
-        (closql--resolve-slots obj))
-      obj)))
+        (closql--resolve-slots this))
+      this)))
 
 (cl-defmethod closql--resolve-slots ((obj closql-object))
   (dolist (slot (eieio-class-slots (eieio--object-class obj)))
@@ -378,7 +391,18 @@
             (if (eq elt 'eieio-unbound) eieio-unbound elt))
           row))
 
+(defun closql--coerce (object type)
+  (cl-coerce (if (and (fboundp 'recordp)
+                      (recordp object))
+                 (let* ((len (length object))
+                        (vec (make-vector len -1)))
+                   (dotimes (i len)
+                     (aset vec i (aref object i)))
+                   vec))
+             type))
+
 (cl-defmethod closql--abbrev-class ((class-tag symbol))
+  ;; This other method is only used for old-school eieio-class-tag--*.
   (closql--abbrev-class (intern (substring (symbol-name class-tag) 17))))
 
 (cl-defmethod closql--abbrev-class ((class (subclass closql-object)))
@@ -390,7 +414,7 @@
                        (if suffix (- (length suffix)) nil)))))
 
 (cl-defmethod closql--expand-abbrev ((class (subclass closql-object)) abbrev)
-  (intern (concat "eieio-class-tag--"
+  (intern (concat (and (not (fboundp 'record)) "eieio-class-tag--")
                   (oref-default class closql-class-prefix)
                   (symbol-name abbrev)
                   (oref-default class closql-class-suffix))))
@@ -446,7 +470,13 @@
   (let* ((table (oref-default obj closql-table))
          (key   (oref-default obj closql-primary-key))
          (id    (closql--oref obj key)))
-    (aset obj 0 (intern (format "eieio-class-tag--%s" class)))
+    (aset obj 0
+          (if (fboundp 'record)
+              (aref (copy-sequence
+                     (eieio--class-default-object-cache
+                      (eieio--class-object class)))
+                    0)
+            (intern (format "eieio-class-tag--%s" class))))
     (emacsql db [:update $i1 :set (= class $s2) :where (= $i3 $s4)]
              table
              (closql--abbrev-class class)

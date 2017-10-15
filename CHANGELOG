@@ -1,5 +1,10 @@
 # -*- mode: org -*-
 
+* v0.5.0    UNRELEASED
+
+- Emacs 26.1 will use a new ~record~ type instead of vectors.
+  Closql can now deal with both internal representations.
+
 * v0.4.0    2017/09/19
 
 - The value of a slot can now be a list of objects.  Like for a slot
