@@ -1,6 +1,6 @@
 # -*- mode: org -*-
 
-* v0.5.0    UNRELEASED
+* v0.5.0    2017/11/27
 
 - Emacs 26.1 will use a new ~record~ type instead of vectors.
   Closql can now deal with both internal representations.
