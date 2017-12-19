@@ -1,5 +1,11 @@
 # -*- mode: org -*-
 
+* v0.5.1    UNRELEASED
+
+- A recent change on Emacs 27.0.50 causes an EmacSQL bug to surface.
+  That was fixed upstream and the dependency was bumped to bring in
+  that fix.
+
 * v0.5.0    2017/11/27
 
 - Emacs 26.1 will use a new ~record~ type instead of vectors.
