@@ -1,6 +1,6 @@
 ;;; closql.el --- store EIEIO objects using EmacSQL  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2016-2017  Jonas Bernoulli
+;; Copyright (C) 2016-2018  Jonas Bernoulli
 
 ;; Author: Jonas Bernoulli <jonas@bernoul.li>
 ;; Homepage: https://github.com/emacscollective/closql
@@ -482,6 +482,7 @@
              (closql--abbrev-class class)
              key id)))
 
+;;; _
 (provide 'closql)
 ;; Local Variables:
 ;; indent-tabs-mode: nil
