@@ -482,6 +482,23 @@
              (closql--abbrev-class class)
              key id)))
 
+;;; Utilities
+
+(defun closql-format (object string &rest slots)
+  "Format a string out of a format STRING and an OBJECT's SLOTS.
+
+STRING is a format-string like for `format'.  OBJECT is an Eieio
+object and SLOTS are slots of that object, their values are used
+like `format' uses its OBJECTS arguments (which are unrelated to
+this function's OBJECT argument, they just have similar names).
+
+While this function does not have much to do with the purpose of
+`closql', it is being defined here anyway because Eieio does not
+define a similar function under a more appropriate name such as
+`eieio-format'."
+  (apply #'format string
+         (mapcar (lambda (slot) (eieio-oref object slot)) slots)))
+
 ;;; _
 (provide 'closql)
 ;; Local Variables:
