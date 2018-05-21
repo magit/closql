@@ -398,7 +398,8 @@
                         (vec (make-vector len -1)))
                    (dotimes (i len)
                      (aset vec i (aref object i)))
-                   vec))
+                   vec)
+               object)
              type))
 
 (cl-defmethod closql--abbrev-class ((class-tag symbol))

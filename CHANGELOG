@@ -1,5 +1,12 @@
 # -*- mode: org -*-
 
+* v0.5.2    UNRELEASED
+
+- Fixed a bug that caused ~closql-insert~ to fail when using Emacs 25
+  ever since Emacs 26 is supported too.
+
+- Added new utility function ~closql-format~.
+
 * v0.5.1    2017/12/19
 
 - A recent change on Emacs 27.0.50 causes an EmacSQL bug to surface.
