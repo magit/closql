@@ -48,6 +48,7 @@
    (closql-primary-key   :initform nil :allocation :class)
    (closql-foreign-key   :initform nil :allocation :class)
    (closql-foreign-table :initform nil :allocation :class)
+   (closql-order-by      :initform nil :allocation :class)
    (closql-database      :initform nil :initarg :closql-database))
   :abstract t)
 
@@ -87,9 +88,13 @@
           (aset obj c
                 (mapcar (lambda (row)
                           (closql--remake-instance class db row))
-                        (emacsql db [:select * :from $i1
-                                     :where (= $i2 $s3)
-                                     :order-by [(asc $i4)]]
+                        (emacsql db (vconcat
+                                     [:select * :from $i1
+                                      :where (= $i2 $s3)]
+                                     (vector
+                                      :order-by
+                                      (or (oref-default class closql-order-by)
+                                          [(asc $i4)])))
                                  (oref-default class closql-table)
                                  (oref-default class closql-foreign-key)
                                  (closql--oref
