@@ -101,19 +101,19 @@
                                   obj (oref-default obj closql-primary-key))
                                  (oref-default class closql-primary-key)))))
          (columns
-            (if (eq value eieio-unbound)
-                (pcase-let ((`(,where . ,select) (cl-coerce columns 'list)))
-                  (setq value
-                        (emacsql db [:select $i1 :from $i2
-                                     :where (= $i3 $s4)
-                                     :order-by [(asc $i3)]]
-                                 (vconcat select) slot where
-                                 (closql--oref
-                                  obj (oref-default obj closql-primary-key))))
-                  (aset obj c (if (= (length select) 1)
-                                  (mapcar #'car value)
-                                value)))
-              value))
+          (if (eq value eieio-unbound)
+              (pcase-let ((`(,where . ,select) (cl-coerce columns 'list)))
+                (setq value
+                      (emacsql db [:select $i1 :from $i2
+                                   :where (= $i3 $s4)
+                                   :order-by [(asc $i3)]]
+                               (vconcat select) slot where
+                               (closql--oref
+                                obj (oref-default obj closql-primary-key))))
+                (aset obj c (if (= (length select) 1)
+                                (mapcar #'car value)
+                              value)))
+            value))
          (t
           (eieio-barf-if-slot-unbound value obj slot 'oref)))))))
 
