@@ -321,8 +321,7 @@
   (unless class
     (setq class (oref-default db object-class)))
   (let ((row (car (emacsql db [:select * :from $i1
-                               :where (= $i2 $s3)
-                               :order-by [(asc $i2)]]
+                               :where (= $i2 $s3)]
                            (oref-default class closql-table)
                            (oref-default class closql-primary-key)
                            ident))))
