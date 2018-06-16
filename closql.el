@@ -320,13 +320,12 @@
 (cl-defmethod closql-get ((db closql-database) ident &optional class)
   (unless class
     (setq class (oref-default db object-class)))
-  (let ((row (car (emacsql db [:select * :from $i1
-                               :where (= $i2 $s3)]
-                           (oref-default class closql-table)
-                           (oref-default class closql-primary-key)
-                           ident))))
-    (and row
-         (closql--remake-instance class db row t))))
+  (when-let ((row (car (emacsql db [:select * :from $i1
+                                    :where (= $i2 $s3)]
+                                (oref-default class closql-table)
+                                (oref-default class closql-primary-key)
+                                ident))))
+    (closql--remake-instance class db row t)))
 
 (cl-defmethod closql-query ((db closql-database) &optional select pred class)
   (if select
