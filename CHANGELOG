@@ -5,6 +5,9 @@
 - Added new ~closql-object~ class slot ~closql-order-by~, which allows
   specify how the values of a related ~:closql-class~ slot are ordered.
 
+- An initially unbound slot for which neither ~:closql-class~ nor
+  ~:closql-columns~ is set caused an error in ~closql--resolve-slots~.
+
 * v0.5.2    2018/05/21
 
 - Fixed a bug that caused ~closql-insert~ to fail when using Emacs 25

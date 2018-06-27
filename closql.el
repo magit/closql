@@ -381,7 +381,9 @@
 (cl-defmethod closql--resolve-slots ((obj closql-object))
   (dolist (slot (eieio-class-slots (eieio--object-class obj)))
     (setq  slot (cl--slot-descriptor-name slot))
-    (unless (slot-boundp obj slot)
+    (when (and (not (slot-boundp obj slot))
+               (or (closql--slot-get obj slot :closql-class)
+                   (closql--slot-get obj slot :closql-columns)))
       (closql--oset obj slot (closql-oref obj slot)))))
 
 (defun closql--intern-unbound (row)
