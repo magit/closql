@@ -39,6 +39,8 @@
 (require 'eieio)
 (require 'emacsql-sqlite)
 
+(eval-when-compile (require 'subr-x))
+
 ;;; Objects
 
 (defclass closql-object ()
