@@ -1,6 +1,5 @@
 # -*- mode: org -*-
-
-* v0.6.0    UNRELEASED
+* v0.6.0    2018/07/01
 
 - Added new ~closql-object~ class slot ~closql-order-by~, which allows
   specify how the values of a related ~:closql-class~ slot are ordered.
