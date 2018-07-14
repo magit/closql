@@ -353,7 +353,9 @@
                       [:select $i1 :from $i2])
                     (and pred
                          [:where class :in $v3])
-                    [:order-by [(asc $i4)]])
+                    (if-let ((order (oref-default class closql-order-by)))
+                        (vector :order-by order)
+                      [:order-by [(asc $i4)]]))
            select
            (oref-default class closql-table)
            (and pred (closql-where-class-in pred))
