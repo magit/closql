@@ -287,7 +287,7 @@
                              arg))
                          args))))
 
-(cl-defmethod closql-insert ((db closql-database) obj)
+(cl-defmethod closql-insert ((db closql-database) obj &optional replace)
   (closql--oset obj 'closql-database db)
   (let (alist)
     (dolist (slot (eieio-class-slots (eieio--object-class obj)))
@@ -297,7 +297,10 @@
           (push (cons slot (closql-oref obj slot)) alist)
           (closql--oset obj slot eieio-unbound))))
     (emacsql-with-transaction db
-      (emacsql db [:insert-into $i1 :values $v2]
+      (emacsql db
+               (if replace
+                   [:insert-or-replace-into $i1 :values $v2]
+                 [:insert-into $i1 :values $v2])
                (oref-default obj closql-table)
                (pcase-let ((`(,class ,_db . ,values)
                             (closql--intern-unbound
