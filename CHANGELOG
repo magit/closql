@@ -1,9 +1,12 @@
 # -*- mode: org -*-
 * v0.7.0    UNRELEASED
 
-- Added optional ~replace~ argument to ~closql-insert~.  It non-nil, then
-  this function uses ~INSERT OR REPLACE INTO~ is used instead of just
+- Added optional ~replace~ argument to ~closql-insert~.  It non-nil,
+  then this function uses ~INSERT OR REPLACE INTO~ instead of just
   ~INSERT INTO~, allowing the caller to replace an existing row.
+
+- Added function ~closql-reload~, which, given a potentially outdated
+  object, returns an up-to-date object.
 
 * v0.6.0    2018/07/01
 

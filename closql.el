@@ -322,6 +322,12 @@
              key
              (closql--oref obj key))))
 
+(cl-defmethod closql-reload ((obj closql-object))
+  (or (closql-get (closql--oref obj 'closql-database)
+                  (closql--oref obj (oref-default obj closql-primary-key))
+                  (eieio-object-class obj))
+      (error "Cannot reload object")))
+
 (cl-defmethod closql-get ((db closql-database) ident &optional class)
   (unless class
     (setq class (oref-default db object-class)))
