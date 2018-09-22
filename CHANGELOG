@@ -13,6 +13,8 @@
   can be different from that of the slot, which previously was not
   possible.  The slots are now determined by quering the database.
 
+- Added new experimental function ~closql--iref~.
+
 * v0.6.0    2018/07/01
 
 - Added new ~closql-object~ class slot ~closql-order-by~, which allows

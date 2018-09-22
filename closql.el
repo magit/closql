@@ -216,7 +216,9 @@
 
 (defun closql--slot-table (obj slot)
   (let ((tbl (closql--slot-get obj slot :closql-table)))
-    (and tbl (intern (replace-regexp-in-string "-" "_" (symbol-name tbl))))))
+    (and tbl (intern (replace-regexp-in-string
+                      "-" "_"
+                      (symbol-name (if (symbolp tbl) tbl (car tbl))))))))
 
 (defun closql--slot-get (object-or-class slot prop)
   (let ((s (car (cl-member slot
@@ -508,6 +510,36 @@
              table
              (closql--abbrev-class class)
              key id)))
+
+;;; Experimental
+
+(defun closql--iref (obj slot)
+  (pcase-let*
+      ((db (closql--oref obj 'closql-database))
+       (`(,d-table ,i-table)
+        (closql--slot-tables obj slot))
+       (d-cols (closql--table-columns db d-table))
+       (i-cols (closql--table-columns db i-table))
+       (obj-id (closql--oref obj (oref-default obj closql-primary-key))))
+    (emacsql db (format "\
+SELECT DISTINCT %s FROM %s AS d, %s AS i
+WHERE d.%s = i.%s AND d.%s = '%S';"
+                (mapconcat (apply-partially #'format "i.%s")
+                           (cddr i-cols) ", ")
+                d-table
+                i-table
+                (cadr d-cols)
+                (cadr i-cols)
+                (car  d-cols)
+                obj-id))))
+
+(defun closql--slot-tables (obj slot)
+  (let ((tbls (closql--slot-get obj slot :closql-table)))
+    (unless (listp tbls)
+      (error "%s isn't an indirect slot" slot))
+    (pcase-let ((`(,d-tbl ,i-tbl) tbls))
+      (list (intern (replace-regexp-in-string "-" "_" (symbol-name d-tbl)))
+            (intern (replace-regexp-in-string "-" "_" (symbol-name i-tbl)))))))
 
 ;;; Utilities
 
