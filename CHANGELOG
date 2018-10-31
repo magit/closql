@@ -1,5 +1,5 @@
 # -*- mode: org -*-
-* v0.7.0    UNRELEASED
+* v1.0.0    2018/10/31
 
 - Added optional ~replace~ argument to ~closql-insert~.  It non-nil,
   then this function uses ~INSERT OR REPLACE INTO~ instead of just
