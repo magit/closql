@@ -1,6 +1,6 @@
 ;;; closql.el --- store EIEIO objects using EmacSQL  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2016-2018  Jonas Bernoulli
+;; Copyright (C) 2016-2019  Jonas Bernoulli
 
 ;; Author: Jonas Bernoulli <jonas@bernoul.li>
 ;; Homepage: https://github.com/emacscollective/closql
@@ -308,7 +308,7 @@
                             (closql--intern-unbound
                              (closql--coerce obj 'list))))
                  (vconcat (cons (closql--abbrev-class
-                                 (if (fboundp 'record)
+                                 (if (eieio--class-p class)
                                      (eieio--class-name class)
                                    class))
                                 values))))
