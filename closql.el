@@ -308,7 +308,7 @@
                             (closql--intern-unbound
                              (closql--coerce obj 'list))))
                  (vconcat (cons (closql--abbrev-class
-                                 (if (fboundp 'record)
+                                 (if (eieio--class-p class)
                                      (eieio--class-name class)
                                    class))
                                 values))))

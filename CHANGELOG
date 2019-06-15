@@ -1,4 +1,9 @@
 # -*- mode: org -*-
+* v1.0.1    UNRELEASED
+
+- Adjusted to an incompatible change to Eieio internals that broke
+  some code that relied on implementation details.
+
 * v1.0.0    2018/10/31
 
 - Added optional ~replace~ argument to ~closql-insert~.  It non-nil,
