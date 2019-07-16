@@ -372,8 +372,11 @@
            (and pred (closql-where-class-in pred))
            (oref-default class closql-primary-key)))
 
-(defun closql--table-columns (db table)
-  (mapcar #'cadr (emacsql db (format "PRAGMA table_info(%s)" table))))
+(defun closql--table-columns (db table &optional prefixed)
+  (mapcar (if prefixed
+              (lambda (col) (intern (format "%s:%s" table (cadr col))))
+            #'cadr)
+          (emacsql db (format "PRAGMA table_info(%s)" table))))
 
 ;;; Object/Row Conversion
 
