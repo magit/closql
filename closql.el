@@ -44,7 +44,6 @@
    (closql-table         :initform nil :allocation :class)
    (closql-primary-key   :initform nil :allocation :class)
    (closql-foreign-key   :initform nil :allocation :class)
-   (closql-foreign-table :initform nil :allocation :class)
    (closql-order-by      :initform nil :allocation :class)
    (closql-database      :initform nil :initarg :closql-database))
   :abstract t)
