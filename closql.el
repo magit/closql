@@ -77,7 +77,7 @@
           (slot-missing obj slot 'oref))
       (cl-check-type obj eieio-object)
       (let ((value (aref obj c))
-            (class (closql--slot-get obj slot :closql-class))
+            (class (closql--slot-class obj slot))
             (table (closql--slot-table obj slot))
             (db    (closql--oref obj 'closql-database)))
         (cond
@@ -147,7 +147,7 @@
 (defun closql--dset (db obj slot value)
   (let* ((key   (oref-default obj closql-primary-key))
          (id    (closql--oref obj key))
-         (class (closql--slot-get obj slot :closql-class))
+         (class (closql--slot-class obj slot))
          (table (closql--slot-table obj slot)))
     (cond
      (class
@@ -208,6 +208,9 @@
                key id)))))
 
 ;;;; Slot Properties
+
+(defun closql--slot-class (obj slot)
+  (closql--slot-get obj slot :closql-class))
 
 (defun closql--slot-table (obj slot)
   (let ((tbl (closql--slot-get obj slot :closql-table)))
