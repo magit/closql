@@ -362,9 +362,7 @@
   (unless class
     (setq class (oref-default db object-class)))
   (emacsql db
-           (vconcat (if (eq select '*)
-                        [:select * :from $i2]
-                      [:select $i1 :from $i2])
+           (vconcat [:select $i1 :from $i2]
                     (and pred
                          [:where class :in $v3])
                     (if-let ((order (oref-default class closql-order-by)))
