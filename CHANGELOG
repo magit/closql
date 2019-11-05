@@ -16,7 +16,7 @@
 - Replaced the slot property ~:closql-columns~ with ~:closql-table~.  The
   value has to be a table instead of a vector of columns and its name
   can be different from that of the slot, which previously was not
-  possible.  The slots are now determined by quering the database.
+  possible.  The slots are now determined by querying the database.
 
 - Added new experimental function ~closql--iref~.
 
