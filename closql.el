@@ -65,9 +65,13 @@
   (cl-check-type obj (or eieio-object class))
   (let* ((class (cond ((symbolp obj)
                        (error "eieio-oref called on a class: %s" obj)
-                       (let ((c (cl--find-class obj)))
-                         (if (eieio--class-p c) (eieio-class-un-autoload obj))
-                         c))
+                       (cond
+                        ((fboundp 'eieio--full-class-object) ; Emacs >= 27
+                         (eieio--full-class-object obj))
+                        ((fboundp 'eieio-class-un-autoload) ; Emacs < 27
+                         (let ((c (cl--find-class obj)))
+                           (if (eieio--class-p c) (eieio-class-un-autoload obj))
+                           c))))
                       (t (eieio--object-class obj))))
          (c (eieio--slot-name-index class slot)))
     (if (not c)
