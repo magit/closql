@@ -1,7 +1,7 @@
 # -*- mode: org -*-
-* v1.0.1    UNRELEASED
+* v1.0.1    2019/12/05
 
-- Adjusted to an incompatible change to Eieio internals that broke
+- Adjusted to incompatibles changes to Eieio internals that broke
   some code that relied on implementation details.
 
 * v1.0.0    2018/10/31
