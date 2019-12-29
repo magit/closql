@@ -300,7 +300,7 @@
   (let (alist)
     (dolist (slot (eieio-class-slots (eieio--object-class obj)))
       (setq  slot (cl--slot-descriptor-name slot))
-      (let ((table (closql--slot-get obj slot :closql-table)))
+      (let ((table (closql--slot-table obj slot)))
         (when table
           (push (cons slot (closql-oref obj slot)) alist)
           (closql--oset obj slot eieio-unbound))))
@@ -407,8 +407,8 @@
   (dolist (slot (eieio-class-slots (eieio--object-class obj)))
     (setq  slot (cl--slot-descriptor-name slot))
     (when (and (not (slot-boundp obj slot))
-               (or (closql--slot-get obj slot :closql-class)
-                   (closql--slot-get obj slot :closql-table)))
+               (or (closql--slot-class obj slot)
+                   (closql--slot-table obj slot)))
       (closql--oset obj slot (closql-oref obj slot)))))
 
 (defun closql--intern-unbound (row)
