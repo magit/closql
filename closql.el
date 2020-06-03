@@ -123,7 +123,9 @@
 ;;;; Oset
 
 (defun eieio-oset--closql-oset (fn obj slot value)
-  (if (closql-object--eieio-childp obj)
+  (if (cl-letf (((symbol-function #'eieio--full-class-object)
+                 #'eieio--class-object))
+        (closql-object--eieio-childp obj))
       (closql-oset obj slot value)
     (funcall fn obj slot value)))
 
