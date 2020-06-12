@@ -1,4 +1,9 @@
 # -*- mode: org -*-
+* v1.0.3    2020/06/13
+
+- When any class is autoloaded, then that could still caused a
+  recursive load.
+
 * v1.0.2    2020/05/22
 
 - When any class is autoloaded, then that caused a recursive load.
