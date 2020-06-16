@@ -48,12 +48,15 @@
    (closql-database      :initform nil :initarg :closql-database))
   :abstract t)
 
+(defun closql--closql-object-p (obj)
+  (cl-letf (((symbol-function #'eieio--full-class-object)
+             #'eieio--class-object))
+    (closql-object--eieio-childp obj)))
+
 ;;;; Oref
 
 (defun eieio-oref--closql-oref (fn obj slot)
-  (if (cl-letf (((symbol-function #'eieio--full-class-object)
-                 #'eieio--class-object))
-        (closql-object--eieio-childp obj))
+  (if (closql--closql-object-p obj)
       (closql-oref obj slot)
     (funcall fn obj slot)))
 
@@ -123,9 +126,7 @@
 ;;;; Oset
 
 (defun eieio-oset--closql-oset (fn obj slot value)
-  (if (cl-letf (((symbol-function #'eieio--full-class-object)
-                 #'eieio--class-object))
-        (closql-object--eieio-childp obj))
+  (if (closql--closql-object-p obj)
       (closql-oset obj slot value)
     (funcall fn obj slot value)))
 
