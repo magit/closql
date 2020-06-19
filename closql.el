@@ -289,7 +289,8 @@
           (set variable db))
         db)))
 
-(cl-defgeneric closql--db-init (db))
+(cl-defgeneric closql--db-init (db)
+  db)
 
 (cl-defmethod emacsql ((connection closql-database) sql &rest args)
   (mapcar #'closql--extern-unbound
