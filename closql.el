@@ -390,6 +390,13 @@
             #'cadr)
           (emacsql db (format "PRAGMA table_info(%s)" table))))
 
+(defun closql--db-get-version (db)
+  (caar (emacsql db [:pragma user-version])))
+
+(defun closql--db-set-version (db version)
+  (cl-assert (integerp version))
+  (emacsql db [:pragma (= user-version $s1)] version))
+
 ;;; Object/Row Conversion
 
 (cl-defmethod closql--remake-instance ((class (subclass closql-object))
