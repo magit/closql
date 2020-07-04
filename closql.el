@@ -388,7 +388,7 @@
   (mapcar (if prefixed
               (lambda (col) (intern (format "%s:%s" table (cadr col))))
             #'cadr)
-          (emacsql db (format "PRAGMA table_info(%s)" table))))
+          (emacsql db [:pragma (funcall table-info $i1)] table)))
 
 (defun closql--db-get-version (db)
   (caar (emacsql db [:pragma user-version])))
