@@ -1,25 +1,26 @@
 ;;; closql.el --- store EIEIO objects using EmacSQL  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2016-2020  Jonas Bernoulli
+;; Copyright (C) 2016-2021  Jonas Bernoulli
 
 ;; Author: Jonas Bernoulli <jonas@bernoul.li>
 ;; Homepage: https://github.com/emacscollective/closql
-;; Package-Requires: ((emacs "25.1") (emacsql-sqlite "3.0.0"))
 ;; Keywords: extensions
-
-;; This file is not part of GNU Emacs.
+;; Package-Requires: ((emacs "25.1") (emacsql-sqlite "3.0.0"))
+;; SPDX-License-Identifier: GPL-3.0-or-later
 
 ;; This file is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published
 ;; by the Free Software Foundation; either version 3 of the License,
 ;; or (at your option) any later version.
-
+;;
 ;; This file is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
-
+;;
 ;; For a full copy of the GNU GPL see http://www.gnu.org/licenses.
+
+;; This file is not part of GNU Emacs.
 
 ;;; Commentary:
 
