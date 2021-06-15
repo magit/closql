@@ -542,14 +542,14 @@
     (emacsql db (format "\
 SELECT DISTINCT %s FROM %s AS d, %s AS i
 WHERE d.%s = i.%s AND d.%s = '%S';"
-                (mapconcat (apply-partially #'format "i.%s")
-                           (cddr i-cols) ", ")
-                d-table
-                i-table
-                (cadr d-cols)
-                (cadr i-cols)
-                (car  d-cols)
-                obj-id))))
+                        (mapconcat (apply-partially #'format "i.%s")
+                                   (cddr i-cols) ", ")
+                        d-table
+                        i-table
+                        (cadr d-cols)
+                        (cadr i-cols)
+                        (car  d-cols)
+                        obj-id))))
 
 (defun closql--slot-tables (obj slot)
   (let ((tbls (closql--slot-get obj slot :closql-table)))
