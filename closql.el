@@ -37,6 +37,9 @@
 
 (eval-when-compile (require 'subr-x))
 
+(unless (boundp 'eieio--unbound) ; New name since Emacs 28.1.
+  (defvaralias 'eieio--unbound 'eieio-unbound nil))
+
 ;;; Objects
 
 (defclass closql-object ()
@@ -107,7 +110,7 @@
                                   obj (oref-default obj closql-primary-key))
                                  (oref-default class closql-primary-key)))))
          (table
-          (if (eq value eieio-unbound)
+          (if (eq value eieio--unbound)
               (let ((columns (closql--table-columns db table)))
                 (aset obj c
                       (mapcar
@@ -149,7 +152,7 @@
       (eieio--validate-slot-value class c value slot)
       (unless (eq slot 'closql-database)
         (let ((db (closql--oref obj 'closql-database)))
-          (unless (or (not db) (eq db eieio-unbound))
+          (unless (or (not db) (eq db eieio--unbound))
             (closql--dset db obj slot value))))
       (aset obj c value))))
 
@@ -165,7 +168,7 @@
       (emacsql-with-transaction db
         (let ((columns (closql--table-columns db table)))
           ;; Caller might have modified value in place.
-          (closql--oset obj slot eieio-unbound)
+          (closql--oset obj slot eieio--unbound)
           (let ((list1 (closql-oref obj slot))
                 (list2 value)
                 elt1 elt2)
@@ -213,7 +216,7 @@
       (emacsql db [:update $i1 :set (= $i2 $s3) :where (= $i4 $s5)]
                (oref-default obj closql-table)
                slot
-               (if (eq value eieio-unbound) 'eieio-unbound value)
+               (if (eq value eieio--unbound) 'eieio-unbound value)
                key id)))))
 
 ;;;; Slot Properties
@@ -312,7 +315,7 @@
       (let ((table (closql--slot-table obj slot)))
         (when table
           (push (cons slot (closql-oref obj slot)) alist)
-          (closql--oset obj slot eieio-unbound))))
+          (closql--oset obj slot eieio--unbound))))
     (emacsql-with-transaction db
       (emacsql db
                (if replace
@@ -429,12 +432,12 @@
 
 (defun closql--intern-unbound (row)
   (mapcar (lambda (elt)
-            (if (eq elt eieio-unbound) 'eieio-unbound elt))
+            (if (eq elt eieio--unbound) 'eieio-unbound elt))
           row))
 
 (defun closql--extern-unbound (row)
   (mapcar (lambda (elt)
-            (if (eq elt 'eieio-unbound) eieio-unbound elt))
+            (if (eq elt 'eieio-unbound) eieio--unbound elt))
           row))
 
 (defun closql--coerce (object type)
