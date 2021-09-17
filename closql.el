@@ -286,7 +286,7 @@
         (set-process-query-on-exit-flag (oref db process) nil)
         (when debug
           (emacsql-enable-debugging db))
-        (emacsql db (emacsql db [:pragma (= foreign-keys on)]))
+        (emacsql db [:pragma (= foreign-keys on)])
         (when db-init
           (closql--db-init db))
         (when variable
