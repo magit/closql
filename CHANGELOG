@@ -1,4 +1,9 @@
 # -*- mode: org -*-
+* v1.2.0    2021/09/28
+
+- By default ~closql-get~ no longer proactively resolves all slots,
+  which is never actually unnecessary but often extremely expensive.
+
 * v1.1.0    2021/09/27
 
 - Added support for alternative database connectors.

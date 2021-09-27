@@ -350,7 +350,7 @@
                   (eieio-object-class obj))
       (error "Cannot reload object")))
 
-(cl-defmethod closql-get ((db closql-database) ident &optional class)
+(cl-defmethod closql-get ((db closql-database) ident &optional class resolve)
   (unless class
     (setq class (oref-default db object-class)))
   (when-let ((row (car (emacsql db [:select * :from $i1
@@ -358,7 +358,7 @@
                                 (oref-default class closql-table)
                                 (oref-default class closql-primary-key)
                                 ident))))
-    (closql--remake-instance class db row t)))
+    (closql--remake-instance class db row resolve)))
 
 (cl-defmethod closql-query ((db closql-database) &optional select pred class)
   (if select
