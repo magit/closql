@@ -1,4 +1,11 @@
 # -*- mode: org -*-
+* v1.1.0    2021/09/27
+
+- Added support for alternative database connectors.
+  The ~closql-database~ class is abstract now, making it necessary to
+  define a class that derives from that and also from a connector
+  class.
+
 * v1.0.6    2021/06/16
 
 - Adjusted to how unbound slots are represented in Emacs 28.
