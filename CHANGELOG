@@ -1,43 +1,43 @@
 # -*- mode: org -*-
-* v1.2.0    2021/09/28
+* v1.2.0    2021-09-28
 
 - By default ~closql-get~ no longer proactively resolves all slots,
   which is never actually unnecessary but often extremely expensive.
 
-* v1.1.0    2021/09/27
+* v1.1.0    2021-09-27
 
 - Added support for alternative database connectors.
   The ~closql-database~ class is abstract now, making it necessary to
   define a class that derives from that and also from a connector
   class.
 
-* v1.0.6    2021/06/16
+* v1.0.6    2021-06-16
 
 - Adjusted to how unbound slots are represented in Emacs 28.
 
-* v1.0.5    2021/05/30
+* v1.0.5    2021-05-30
 
 - Cosmetics.
 
-* v1.0.4    2020/07/20
+* v1.0.4    2020-07-20
 
 - Added new functions ~closql--db-get~ and ~closql--db-set~.
 
-* v1.0.3    2020/06/13
+* v1.0.3    2020-06-13
 
 - When any class is autoloaded, then that could still caused a
   recursive load.
 
-* v1.0.2    2020/05/22
+* v1.0.2    2020-05-22
 
 - When any class is autoloaded, then that caused a recursive load.
 
-* v1.0.1    2019/12/05
+* v1.0.1    2019-12-05
 
 - Adjusted to incompatibles changes to Eieio internals that broke
   some code that relied on implementation details.
 
-* v1.0.0    2018/10/31
+* v1.0.0    2018-10-31
 
 - Added optional ~replace~ argument to ~closql-insert~.  It non-nil,
   then this function uses ~INSERT OR REPLACE INTO~ instead of just
@@ -53,7 +53,7 @@
 
 - Added new experimental function ~closql--iref~.
 
-* v0.6.0    2018/07/01
+* v0.6.0    2018-07-01
 
 - Added new ~closql-object~ class slot ~closql-order-by~, which allows
   specify how the values of a related ~:closql-class~ slot are ordered.
@@ -61,25 +61,25 @@
 - An initially unbound slot for which neither ~:closql-class~ nor
   ~:closql-columns~ is set caused an error in ~closql--resolve-slots~.
 
-* v0.5.2    2018/05/21
+* v0.5.2    2018-05-21
 
 - Fixed a bug that caused ~closql-insert~ to fail when using Emacs 25
   ever since Emacs 26 is supported too.
 
 - Added new utility function ~closql-format~.
 
-* v0.5.1    2017/12/19
+* v0.5.1    2017-12-19
 
 - A recent change on Emacs 27.0.50 causes an EmacSQL bug to surface.
   That was fixed upstream and the dependency was bumped to bring in
   that fix.
 
-* v0.5.0    2017/11/27
+* v0.5.0    2017-11-27
 
 - Emacs 26.1 will use a new ~record~ type instead of vectors.
   Closql can now deal with both internal representations.
 
-* v0.4.0    2017/09/19
+* v0.4.0    2017-09-19
 
 - The value of a slot can now be a list of objects.  Like for a slot
   whose value is a list of lists, the elements have to be uniform, in
@@ -126,30 +126,30 @@
 
 - The function signature of ~closql--remake-instance~ changed.
 
-* v0.3.3    2016/12/31
+* v0.3.3    2016-12-31
 
 - Repository moved to https://github.com/emacscollective/closql.
 
-* v0.3.2    2016/11/26
+* v0.3.2    2016-11-26
 
 - Update links.
 
-* v0.3.1    2016/11/03
+* v0.3.1    2016-11-03
 
 - Fixed updating of rows in secondary tables when the key is ~nil~.
 
-* v0.3.0    2016/10/25
+* v0.3.0    2016-10-25
 
 - Setting the value of a slot whose value is stored in a secondary
   table no longer deletes and recreates all rows.
 
 - ~closql--db-init~ no longer sets the primary key of secondary tables.
 
-* v0.2.0    2016/09/02
+* v0.2.0    2016-09-02
 
 - Text properties are now being removed when storing string in the
   database.
 
-* v0.1.0    2016/04/15
+* v0.1.0    2016-04-15
 
 - Initial public alpha release.
