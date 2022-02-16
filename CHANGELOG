@@ -1,4 +1,8 @@
 # -*- mode: org -*-
+* v1.2.1    2022-02-16
+
+- Refreshed metadata.
+
 * v1.2.0    2021-09-28
 
 - By default ~closql-get~ no longer proactively resolves all slots,
