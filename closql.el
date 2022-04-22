@@ -114,7 +114,7 @@
               (let ((columns (closql--table-columns db table)))
                 (aset obj c
                       (mapcar
-                       (if (= (length columns) 2) #'cadr #'cdr)
+                       (if (length= columns 2) #'cadr #'cdr)
                        (emacsql db [:select * :from $i1
                                     :where (= $i2 $s3)
                                     :order-by [(asc $i4)]]
@@ -172,7 +172,7 @@
           (let ((list1 (closql-oref obj slot))
                 (list2 value)
                 elt1 elt2)
-            (when (= (length columns) 2)
+            (when (length= columns 2)
               (setq list1 (mapcar #'list list1))
               (setq list2 (mapcar #'list list2)))
             ;; `list2' may not be sorted at all and `list1' has to
