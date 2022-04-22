@@ -353,7 +353,7 @@
 (cl-defmethod closql-get ((db closql-database) ident &optional class resolve)
   (unless class
     (setq class (oref-default db object-class)))
-  (when-let ((row (car (emacsql db [:select * :from $i1
+  (and-let* ((row (car (emacsql db [:select * :from $i1
                                     :where (= $i2 $s3)]
                                 (oref-default class closql-table)
                                 (oref-default class closql-primary-key)
