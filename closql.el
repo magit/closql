@@ -42,8 +42,9 @@
 
 (eval-when-compile (require 'subr-x))
 
-(unless (boundp 'eieio--unbound) ; New name since Emacs 28.1.
-  (defvaralias 'eieio--unbound 'eieio-unbound nil))
+(eval-and-compile
+  (unless (boundp 'eieio--unbound) ; New name since Emacs 28.1.
+    (defvaralias 'eieio--unbound 'eieio-unbound nil)))
 
 ;;; Objects
 
