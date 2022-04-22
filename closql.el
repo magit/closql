@@ -487,10 +487,10 @@
    (mapcar #'closql--abbrev-class
            (cl-mapcan (lambda (sym)
                         (let ((str (symbol-name sym)))
-                          (cond ((string-match-p "--eieio-childp\\'" str)
+                          (cond ((string-suffix-p "--eieio-childp" str)
                                  (closql--list-subclasses
                                   (intern (substring str 0 -14)) nil))
-                                ((string-match-p "-p\\'" str)
+                                ((string-suffix-p "-p" str)
                                  (list (intern (substring str 0 -2))))
                                 (t
                                  (list sym)))))
