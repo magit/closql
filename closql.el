@@ -5,7 +5,7 @@
 ;; Author: Jonas Bernoulli <jonas@bernoul.li>
 ;; Homepage: https://github.com/emacscollective/closql
 ;; Keywords: extensions
-;; Package-Requires: ((emacs "25.1") (emacsql-sqlite "3.0.0"))
+;; Package-Requires: ((emacs "25.1") (compat "28.1.1.0") (emacsql-sqlite "3.0.0"))
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
 ;; This file is free software; you can redistribute it and/or modify
@@ -31,6 +31,7 @@
 
 ;;; Code:
 
+(require 'compat)
 (require 'eieio)
 (require 'emacsql-sqlite)
 

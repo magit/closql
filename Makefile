@@ -5,7 +5,8 @@ PKG = closql
 ELS   = $(PKG).el
 ELCS  = $(ELS:.el=.elc)
 
-DEPS  = emacsql
+DEPS  = compat
+DEPS += emacsql
 
 EMACS      ?= emacs
 EMACS_ARGS ?=
