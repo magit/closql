@@ -226,7 +226,7 @@
 
 (defun closql--slot-table (obj slot)
   (let ((tbl (closql--slot-get obj slot :closql-table)))
-    (and tbl (intern (replace-regexp-in-string
+    (and tbl (intern (string-replace
                       "-" "_"
                       (symbol-name (if (symbolp tbl) tbl (car tbl))))))))
 
@@ -560,8 +560,8 @@ WHERE d.%s = i.%s AND d.%s = '%S';"
     (unless (listp tbls)
       (error "%s isn't an indirect slot" slot))
     (pcase-let ((`(,d-tbl ,i-tbl) tbls))
-      (list (intern (replace-regexp-in-string "-" "_" (symbol-name d-tbl)))
-            (intern (replace-regexp-in-string "-" "_" (symbol-name i-tbl)))))))
+      (list (intern (string-replace "-" "_" (symbol-name d-tbl)))
+            (intern (string-replace "-" "_" (symbol-name i-tbl)))))))
 
 ;;; Utilities
 
