@@ -53,7 +53,9 @@
   :abstract t)
 
 (defun closql--closql-object-p (obj)
-  (cl-letf (((symbol-function #'eieio--full-class-object)
+  ;; Prevent a recursive load when the class object is autoloaded.
+  ;; See c1a9b816ec.  Don't #'quote; doesn't exist in older releases.
+  (cl-letf (((symbol-function 'eieio--full-class-object)
              #'eieio--class-object))
     (closql-object--eieio-childp obj)))
 
