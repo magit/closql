@@ -8,7 +8,7 @@
 
 ;; Package-Requires: (
 ;;     (emacs "25.1")
-;;     (compat "28.1.1.0")
+;;     (compat "29.1.3.4")
 ;;     (emacsql-sqlite "3.0.0"))
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
