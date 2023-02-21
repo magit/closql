@@ -7,6 +7,6 @@ All objects have to share a common superclass and subclasses cannot
 add any additional instance slots.
 
 #+html: <br><br>
-#+html: <a href="https://github.com/tarsius/closql/actions/workflows/compile.yml"><img alt="Compile" src="https://github.com/tarsius/closql/actions/workflows/compile.yml/badge.svg"/></a>
+#+html: <a href="https://github.com/magit/closql/actions/workflows/compile.yml"><img alt="Compile" src="https://github.com/magit/closql/actions/workflows/compile.yml/badge.svg"/></a>
 #+html: <a href="https://stable.melpa.org/#/closql"><img alt="MELPA Stable" src="https://stable.melpa.org/packages/closql-badge.svg"/></a>
 #+html: <a href="https://melpa.org/#/closql"><img alt="MELPA" src="https://melpa.org/packages/closql-badge.svg"/></a>
