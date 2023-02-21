@@ -38,13 +38,23 @@
 
 (require 'compat)
 (require 'eieio)
-(require 'emacsql-sqlite)
+(require 'eieio-base)
+(require 'emacsql)
+(require 'emacsql-sqlite-common)
 
 (eval-when-compile (require 'subr-x))
 
 (eval-and-compile
   (unless (boundp 'eieio--unbound) ; New name since Emacs 28.1.
     (defvaralias 'eieio--unbound 'eieio-unbound nil)))
+
+(eval-when-compile
+  (cl-pushnew 'connection eieio--known-slot-names))
+
+(defmacro closql-with-transaction (db &rest body)
+  (declare (indent 1))
+  `(emacsql-with-transaction (oref ,db connection)
+     ,@body))
 
 ;;; Objects
 
@@ -173,7 +183,7 @@
      (class
       (error "Not implemented for closql-class slots: oset"))
      (table
-      (emacsql-with-transaction db
+      (closql-with-transaction db
         (let ((columns (closql--table-columns db table)))
           ;; Caller might have modified value in place.
           (closql--oset obj slot eieio--unbound)
@@ -281,35 +291,84 @@
 
 ;;; Database
 
-(defclass closql-database ()
-  ((object-class :allocation :class))
+(defclass closql-database (eieio-singleton)
+  ((name         :initform nil :allocation :class)
+   (object-class :initform nil :allocation :class)
+   (file         :initform nil :allocation :class)
+   (schemata     :initform nil :allocation :class)
+   (version      :initform nil :allocation :class)
+   (disabled     :initform nil :allocation :class)
+   (connection   :initform nil :initarg :connection))
   :abstract t)
 
 (cl-defmethod closql-db ((class (subclass closql-database))
-                         &optional variable file debug)
-  (or (let ((db (and variable (symbol-value variable))))
-        (and db (emacsql-live-p db)
-             (prog1 db (emacsql db [:pragma (= foreign-keys on)]))))
-      (let ((db-init (not (and file (file-exists-p file))))
-            (db (make-instance class :file file)))
-        (when (and (slot-boundp db 'handle)
-                   (processp (oref db handle)))
-          (set-process-query-on-exit-flag (oref db handle) nil))
-        (when debug
-          (emacsql-enable-debugging db))
-        (emacsql db [:pragma (= foreign-keys on)])
-        (when db-init
-          (closql--db-init db))
-        (when variable
-          (set variable db))
-        db)))
+                         &optional livep connection-class)
+  (or (and-let* ((db (oref-default class singleton))
+                 (conn (and (not (eq db eieio--unbound))
+                            (oref db connection))))
+        (and (emacsql-live-p conn) db))
+      (and (not livep)
+           (let* ((file (closql--db-prepare-storage class))
+                  (connection-class (or connection-class
+                                        (emacsql-sqlite-default-connection)))
+                  (conn (make-instance connection-class :file file))
+                  (db (make-instance class :connection conn)))
+             (when (and (slot-boundp conn 'handle)
+                        (processp (oref conn handle)))
+               (set-process-query-on-exit-flag (oref conn handle) nil))
+             (emacsql conn [:pragma (= foreign-keys on)])
+             (if (not (emacsql-sqlite-list-tables db))
+                 (closql--db-create-schema db)
+               (let ((code-version (oref-default db version))
+                     (data-version (closql--db-get-version db)))
+                 (cond
+                  ((< code-version data-version)
+                   (message
+                    "Please update %s package (database schema version %s < %s)"
+                    (oref-default db name) code-version data-version)
+                   (oset-default db disabled t)
+                   (emacsql-close db)
+                   (setq db nil))
+                  ((closql--db-update-schema db)))))
+             db))))
 
-(cl-defgeneric closql--db-init (db)
-  db)
+(cl-defmethod closql--db-prepare-storage ((class (subclass closql-database)))
+  (when-let ((file (oref-default class file)))
+    (when (symbolp file)
+      (setq file (symbol-value file)))
+    (make-directory (file-name-directory file) t)
+    file))
 
-(cl-defmethod emacsql ((connection closql-database) sql &rest args)
+(cl-defmethod closql--db-create-schema ((db closql-database))
+  (closql-with-transaction db
+    (pcase-dolist (`(,table . ,schema)
+                   (symbol-value (oref-default db schemata)))
+      (emacsql db [:create-table $i1 $S2] table schema))
+    (closql--db-set-version db (oref-default db version))))
+
+(cl-defmethod closql--db-update-schema ((db closql-database))
+  (let ((code-version (oref-default db version))
+        (data-version (closql--db-get-version db)))
+    (when (< data-version code-version)
+      (oset-default db disabled t)
+      (emacsql-close db)
+      (error "Please update %s database (schema version %s < %s)"
+             (oref-default db name) data-version code-version))))
+
+(cl-defmethod emacsql-live-p ((db closql-database))
+  (and-let* ((conn (oref db connection)))
+    (emacsql-live-p conn)))
+
+(cl-defmethod emacsql-enable-debugging ((db closql-database))
+  (emacsql-enable-debugging (oref db connection)))
+
+(cl-defmethod emacsql-close ((db closql-database))
+  (emacsql-close (oref db connection))
+  (oset db connection nil))
+
+(cl-defmethod emacsql ((db closql-database) sql &rest args)
   (mapcar #'closql--extern-unbound
-          (apply #'cl-call-next-method connection sql
+          (apply #'emacsql (oref db connection) sql
                  (mapcar (lambda (arg)
                            (if (stringp arg)
                                (let ((copy (copy-sequence arg)))
@@ -327,7 +386,7 @@
         (when table
           (push (cons slot (closql-oref obj slot)) alist)
           (closql--oset obj slot eieio--unbound))))
-    (emacsql-with-transaction db
+    (closql-with-transaction db
       (emacsql db
                (if replace
                    [:insert-or-replace-into $i1 :values $v2]
