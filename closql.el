@@ -292,9 +292,9 @@
              (prog1 db (emacsql db [:pragma (= foreign-keys on)]))))
       (let ((db-init (not (and file (file-exists-p file))))
             (db (make-instance class :file file)))
-        (when (and (slot-boundp db 'process)
-                   (processp (oref db process)))
-          (set-process-query-on-exit-flag (oref db process) nil))
+        (when (and (slot-boundp db 'handle)
+                   (processp (oref db handle)))
+          (set-process-query-on-exit-flag (oref db handle) nil))
         (when debug
           (emacsql-enable-debugging db))
         (emacsql db [:pragma (= foreign-keys on)])
