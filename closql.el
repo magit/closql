@@ -213,7 +213,7 @@
                   (pop list1))
                  ((string= key1 key2)
                   (unless (equal elt1 elt2)
-                    (cl-mapcar
+                    (cl-mapc
                      (lambda (col val1 val2)
                        (unless (equal val1 val2)
                          (emacsql db [:update $i1 :set (= $i2 $s3)
