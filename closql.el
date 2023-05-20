@@ -312,7 +312,8 @@
                   (connection-class (or connection-class
                                         (emacsql-sqlite-default-connection)))
                   (conn (make-instance connection-class :file file))
-                  (db (make-instance class :connection conn)))
+                  (db (make-instance class))) ; ignores slot arguments
+             (oset db connection conn)
              (when (and (slot-boundp conn 'handle)
                         (processp (oref conn handle)))
                (set-process-query-on-exit-flag (oref conn handle) nil))
