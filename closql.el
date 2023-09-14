@@ -327,7 +327,7 @@
                    (message
                     "Please update %s package (database schema version %s < %s)"
                     (oref-default db name) code-version data-version)
-                   (oset-default db disabled t)
+                   (oset-default class disabled t)
                    (emacsql-close db)
                    (setq db nil))
                   ((closql--db-update-schema db)))))
