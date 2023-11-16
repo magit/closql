@@ -461,7 +461,8 @@
 
 (defun closql--table-columns (db table &optional prefixed)
   (mapcar (if prefixed
-              (lambda (col) (intern (format "%s:%s" table (cadr col))))
+              (let ((prefix (if (stringp prefixed) prefixed table)))
+                (lambda (col) (intern (format "%s:%s" prefix (cadr col)))))
             #'cadr)
           (emacsql db [:pragma (funcall table-info $i1)] table)))
 
