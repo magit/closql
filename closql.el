@@ -101,21 +101,23 @@
             (db    (closql--oref obj 'closql-database)))
         (cond
          (class
-          (aset obj c
-                (mapcar (lambda (row)
-                          (closql--remake-instance class db row))
-                        (emacsql db (vconcat
-                                     [:select * :from $i1
-                                      :where (= $i2 $s3)]
-                                     (vector
-                                      :order-by
-                                      (or (oref-default class closql-order-by)
-                                          [(asc $i4)])))
-                                 (oref-default class closql-table)
-                                 (oref-default class closql-foreign-key)
-                                 (closql--oref
-                                  obj (oref-default obj closql-primary-key))
-                                 (oref-default class closql-primary-key)))))
+          (if (eq value eieio--unbound)
+              (aset obj c
+                    (mapcar
+                     (lambda (row) (closql--remake-instance class db row))
+                     (emacsql db (vconcat
+                                  [:select * :from $i1
+                                   :where (= $i2 $s3)]
+                                  (vector
+                                   :order-by
+                                   (or (oref-default class closql-order-by)
+                                       [(asc $i4)])))
+                              (oref-default class closql-table)
+                              (oref-default class closql-foreign-key)
+                              (closql--oref
+                               obj (oref-default obj closql-primary-key))
+                              (oref-default class closql-primary-key))))
+            value))
          (table
           (if (eq value eieio--unbound)
               (let ((columns (closql--table-columns db table)))
