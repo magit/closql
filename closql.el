@@ -621,23 +621,18 @@
 (defun closql--iref (obj slot)
   (pcase-let*
       ((db (closql--oref obj 'closql-database))
-       (`(,d-table ,i-table)
+       (`(,slot-table ,data-table)
         (closql--slot-tables obj slot))
-       (d-cols (closql--table-columns db d-table "d"))
-       (i-cols (closql--table-columns db i-table "i"))
-       (obj-id (closql--oref obj (oref-default obj closql-primary-key))))
-    (emacsql db [:select :distinct $i1
-                 :from [(as $i2 d)
-                        (as $i3 i)]
-                 :where (and (= $i4 $i5)
-                             (= $i6 $s7))]
-             (vconcat (cddr i-cols))
-             d-table
-             i-table
-             (cadr d-cols)
-             (cadr i-cols)
-             (car  d-cols)
-             obj-id)))
+       (`(,where ,slot-join)           (closql--table-columns db slot-table))
+       (`(,_     ,data-join . ,select) (closql--table-columns db data-table))
+       (object-id (closql--oref obj (oref-default obj closql-primary-key))))
+    (emacsql db [:select $i1 :from $i2 :join $i3
+                 :on (= $i4 $i5)
+                 :where (= $i6 $s7)]
+             (vconcat select) data-table slot-table
+             (intern (format "%s:%s" slot-table slot-join))
+             (intern (format "%s:%s" data-table data-join))
+             where object-id)))
 
 (defun closql--slot-tables (obj slot)
   (let ((tables (closql--slot-get obj slot :closql-table)))
