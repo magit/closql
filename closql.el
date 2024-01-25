@@ -639,12 +639,11 @@ WHERE d.%s = i.%s AND d.%s = '%S';"
                         obj-id))))
 
 (defun closql--slot-tables (obj slot)
-  (let ((tbls (closql--slot-get obj slot :closql-table)))
-    (unless (listp tbls)
+  (let ((tables (closql--slot-get obj slot :closql-table)))
+    (unless (listp tables)
       (error "%s isn't an indirect slot" slot))
-    (pcase-let ((`(,d-tbl ,i-tbl) tbls))
-      (list (intern (string-replace "-" "_" (symbol-name d-tbl)))
-            (intern (string-replace "-" "_" (symbol-name i-tbl)))))))
+    (list (intern (string-replace "-" "_" (symbol-name (nth 0 tables))))
+          (intern (string-replace "-" "_" (symbol-name (nth 1 tables)))))))
 
 ;;; Utilities
 
