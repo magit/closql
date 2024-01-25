@@ -628,11 +628,11 @@
        (object-id (closql--oref obj (oref-default obj closql-primary-key))))
     (emacsql db [:select $i1 :from $i2 :join $i3
                  :on (= $i4 $i5)
-                 :where (= $i6 $s7)]
+                 :where (= $i6 $s7) :order-by [(asc $i8)]]
              (vconcat select) data-table slot-table
              (intern (format "%s:%s" slot-table slot-join))
              (intern (format "%s:%s" data-table data-join))
-             where object-id)))
+             where object-id (car select))))
 
 (defun closql--slot-tables (obj slot)
   (let ((tables (closql--slot-get obj slot :closql-table)))
