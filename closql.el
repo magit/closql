@@ -623,20 +623,21 @@
       ((db (closql--oref obj 'closql-database))
        (`(,d-table ,i-table)
         (closql--slot-tables obj slot))
-       (d-cols (closql--table-columns db d-table))
-       (i-cols (closql--table-columns db i-table))
+       (d-cols (closql--table-columns db d-table "d"))
+       (i-cols (closql--table-columns db i-table "i"))
        (obj-id (closql--oref obj (oref-default obj closql-primary-key))))
-    (emacsql db (format "\
-SELECT DISTINCT %s FROM %s AS d, %s AS i
-WHERE d.%s = i.%s AND d.%s = '%S';"
-                        (mapconcat (apply-partially #'format "i.%s")
-                                   (cddr i-cols) ", ")
-                        d-table
-                        i-table
-                        (cadr d-cols)
-                        (cadr i-cols)
-                        (car  d-cols)
-                        obj-id))))
+    (emacsql db [:select :distinct $i1
+                 :from [(as $i2 d)
+                        (as $i3 i)]
+                 :where (and (= $i4 $i5)
+                             (= $i6 $s7))]
+             (vconcat (cddr i-cols))
+             d-table
+             i-table
+             (cadr d-cols)
+             (cadr i-cols)
+             (car  d-cols)
+             obj-id)))
 
 (defun closql--slot-tables (obj slot)
   (let ((tables (closql--slot-get obj slot :closql-table)))
