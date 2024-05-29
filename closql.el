@@ -460,20 +460,16 @@
 
 (cl-defmethod closql--remake-instance ((class (subclass closql-object))
                                        db row &optional resolve)
-  (pcase-let ((`(,abbrev . ,values)
-               (closql--extern-unbound row)))
-    (let* ((class-sym (closql--expand-abbrev class abbrev))
-           (this (let* ((class-obj (eieio--class-object class-sym))
-                        (obj (copy-sequence
-                              (eieio--class-default-object-cache
-                               class-obj))))
-                   (setq values (apply #'vector (cons db values)))
-                   (dotimes (i (length (eieio--class-slots class-obj)))
-                     (aset obj (1+ i) (aref values i)))
-                   obj)))
-      (when resolve
-        (closql--resolve-slots this))
-      this)))
+  (pcase-let*
+      ((`(,abbrev . ,values) (closql--extern-unbound row))
+       (class-obj (eieio--class-object (closql--expand-abbrev class abbrev)))
+       (obj (copy-sequence (eieio--class-default-object-cache class-obj)))
+       (values (apply #'vector (cons db values))))
+    (dotimes (i (length (eieio--class-slots class-obj)))
+      (aset obj (1+ i) (aref values i)))
+    (when resolve
+      (closql--resolve-slots obj))
+    obj))
 
 (cl-defmethod closql--resolve-slots ((obj closql-object))
   (dolist (slot (eieio-class-slots (eieio--object-class obj)))
