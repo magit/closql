@@ -490,11 +490,11 @@
           row))
 
 (defun closql--coerce (object type)
-  (cl-coerce (let* ((len (length object))
-                    (vec (make-vector len -1)))
-               (dotimes (i len)
-                 (aset vec i (aref obj i)))
-               vec)
+  (cl-coerce (let* ((length (length object))
+                    (vector (make-vector length -1)))
+               (dotimes (i length)
+                 (aset vector i (aref object i)))
+               vector)
              type))
 
 (cl-defmethod closql--abbrev-class ((class (subclass closql-object)))
