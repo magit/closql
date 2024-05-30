@@ -232,15 +232,14 @@
                       (symbol-name (if (symbolp tbl) tbl (car tbl))))))))
 
 (defun closql--slot-get (object-or-class slot prop)
-  (let ((s (car (cl-member slot
-                           (eieio-class-slots
-                            (cond ((eieio-object-p object-or-class)
-                                   (eieio--object-class object-or-class))
-                                  ((eieio--class-p object-or-class)
-                                   object-or-class)
-                                  (t
-                                   (find-class object-or-class 'error))))
-                           :key #'cl--slot-descriptor-name))))
+  (let ((s (cl-find slot
+                    (eieio-class-slots
+                     (cond ((eieio-object-p object-or-class)
+                            (eieio--object-class object-or-class))
+                           ((eieio--class-p object-or-class)
+                            object-or-class)
+                           ((find-class object-or-class 'error))))
+                    :key #'cl--slot-descriptor-name)))
     (and s (cdr (assoc prop (cl--slot-descriptor-props s))))))
 
 (defconst closql--slot-properties '(:closql-class :closql-table))
@@ -250,14 +249,13 @@
   (let ((class (cl--find-class cname)))
     (when (child-of-class-p class 'closql-object)
       (pcase-dolist (`(,name . ,slot) slots)
-        (let ((slot-obj
-               (car (cl-member name
-                               (cl-coerce (eieio--class-slots class) 'list)
-                               :key (lambda (elt) (aref elt 1))))))
+        (let ((desc (cl-find name
+                             (cl-coerce (eieio--class-slots class) 'list)
+                             :key (lambda (elt) (aref elt 1)))))
           (dolist (prop closql--slot-properties)
             (let ((val (plist-get slot prop)))
               (when val
-                (setf (alist-get prop (cl--slot-descriptor-props slot-obj))
+                (setf (alist-get prop (cl--slot-descriptor-props desc))
                       val)))))))))
 
 (advice-add 'eieio-defclass-internal :after
