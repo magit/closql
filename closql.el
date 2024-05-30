@@ -246,26 +246,25 @@
 
 (defun eieio-defclass-internal--set-closql-slot-props
     (cname _superclasses slots _options)
-  (let ((class (cl--find-class cname)))
-    (when (child-of-class-p class 'closql-object)
-      (pcase-dolist (`(,name . ,slot) slots)
-        (let ((desc (cl-find name
-                             (cl-coerce (eieio--class-slots class) 'list)
-                             :key (lambda (elt) (aref elt 1)))))
-          (dolist (prop closql--slot-properties)
-            (let ((val (plist-get slot prop)))
-              (when val
-                (setf (alist-get prop (cl--slot-descriptor-props desc))
-                      val)))))))))
+  (when-let* ((class (cl--find-class cname))
+              ((child-of-class-p class 'closql-object)))
+    (pcase-dolist (`(,name . ,slot) slots)
+      (let ((desc (cl-find name
+                           (cl-coerce (eieio--class-slots class) 'list)
+                           :key (lambda (elt) (aref elt 1)))))
+        (dolist (prop closql--slot-properties)
+          (when-let
+              ((v (plist-get slot prop)))
+            (setf (alist-get prop (cl--slot-descriptor-props desc)) v)))))))
 
 (advice-add 'eieio-defclass-internal :after
             #'eieio-defclass-internal--set-closql-slot-props)
 
 (defun eieio--slot-override--set-closql-slot-props (old new _)
   (dolist (prop closql--slot-properties)
-    (when (alist-get prop (cl--slot-descriptor-props new))
-      (setf (alist-get prop (cl--slot-descriptor-props old))
-            (alist-get prop (cl--slot-descriptor-props new))))))
+    (when-let
+        ((v (alist-get prop (cl--slot-descriptor-props new))))
+      (setf (alist-get prop (cl--slot-descriptor-props old)) v))))
 
 (advice-add 'eieio--slot-override :after
             #'eieio--slot-override--set-closql-slot-props)
@@ -364,10 +363,9 @@
   (let (alist)
     (dolist (slot (eieio-class-slots (eieio--object-class obj)))
       (setq  slot (cl--slot-descriptor-name slot))
-      (let ((table (closql--slot-table obj slot)))
-        (when table
-          (push (cons slot (closql-oref obj slot)) alist)
-          (closql--oset obj slot eieio--unbound))))
+      (when-let ((table (closql--slot-table obj slot)))
+        (push (cons slot (closql-oref obj slot)) alist)
+        (closql--oset obj slot eieio--unbound)))
     (closql-with-transaction db
       (emacsql db
                (if replace
