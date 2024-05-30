@@ -232,10 +232,13 @@
                       (symbol-name (if (symbolp tbl) tbl (car tbl))))))))
 
 (defun closql--slot-get (object-or-class slot prop)
-  (let ((s (cl-find slot
-                    (closql--object-slots object-or-class)
-                    :key #'cl--slot-descriptor-name)))
-    (and s (cdr (assoc prop (cl--slot-descriptor-props s))))))
+  (cdr (assq prop (closql--slot-properties object-or-class slot))))
+
+(defun closql--slot-properties (object-or-class slot)
+  (and-let* ((desc (cl-find slot
+                            (closql--object-slots object-or-class)
+                            :key #'cl--slot-descriptor-name)))
+    (cl--slot-descriptor-props desc)))
 
 (defun closql--object-slots (object-or-class)
   (eieio-class-slots
