@@ -233,14 +233,16 @@
 
 (defun closql--slot-get (object-or-class slot prop)
   (let ((s (cl-find slot
-                    (eieio-class-slots
-                     (cond ((eieio-object-p object-or-class)
-                            (eieio--object-class object-or-class))
-                           ((eieio--class-p object-or-class)
-                            object-or-class)
-                           ((find-class object-or-class 'error))))
+                    (closql--object-slots object-or-class)
                     :key #'cl--slot-descriptor-name)))
     (and s (cdr (assoc prop (cl--slot-descriptor-props s))))))
+
+(defun closql--object-slots (object-or-class)
+  (eieio-class-slots
+   (cond
+    ((eieio-object-p object-or-class) (eieio--object-class object-or-class))
+    ((eieio--class-p object-or-class) object-or-class)
+    ((find-class object-or-class 'error)))))
 
 (defconst closql--slot-properties '(:closql-class :closql-table))
 
