@@ -77,12 +77,11 @@
 
 ;;;; Oref
 
-(defun eieio-oref--closql-oref (fn obj slot)
+(define-advice eieio-oref (:around (fn obj slot) closql-object)
+  "If OBJ is a `closql-object', delegate to `closql-oref'."
   (if (closql--closql-object-p obj)
       (closql-oref obj slot)
     (funcall fn obj slot)))
-
-(advice-add 'eieio-oref :around #'eieio-oref--closql-oref)
 
 (defun closql--oref (obj slot)
   (aref obj (eieio--slot-name-index (eieio--object-class obj) slot)))
@@ -131,12 +130,11 @@
 
 ;;;; Oset
 
-(defun eieio-oset--closql-oset (fn obj slot value)
+(define-advice eieio-oset (:around (fn obj slot value) closql-object)
+  "If OBJ is a `closql-object', delegate to `closql-oset'."
   (if (closql--closql-object-p obj)
       (closql-oset obj slot value)
     (funcall fn obj slot value)))
-
-(advice-add 'eieio-oset :around #'eieio-oset--closql-oset)
 
 (defun closql--oset (obj slot value)
   (aset obj (eieio--slot-name-index (eieio--object-class obj) slot) value))
@@ -249,8 +247,9 @@
 
 (defconst closql--slot-properties '(:closql-class :closql-table))
 
-(defun eieio-defclass-internal--set-closql-slot-props
-    (cname _superclasses slots _options)
+(define-advice eieio-defclass-internal
+    (:after (cname _superclasses slots _options) closql-object)
+  "Handle additional slot properties used by `closql-object' derived classes."
   (when-let* ((class (cl--find-class cname))
               ((child-of-class-p class 'closql-object)))
     (pcase-dolist (`(,name . ,slot) slots)
@@ -262,17 +261,13 @@
               ((v (plist-get slot prop)))
             (setf (alist-get prop (cl--slot-descriptor-props desc)) v)))))))
 
-(advice-add 'eieio-defclass-internal :after
-            #'eieio-defclass-internal--set-closql-slot-props)
-
-(defun eieio--slot-override--set-closql-slot-props (old new _)
+(define-advice eieio--slot-override
+    (:after (old new _skipnil) closql-object)
+  "Handle additional slot properties used by `closql-object' derived classes."
   (dolist (prop closql--slot-properties)
     (when-let
         ((v (alist-get prop (cl--slot-descriptor-props new))))
       (setf (alist-get prop (cl--slot-descriptor-props old)) v))))
-
-(advice-add 'eieio--slot-override :after
-            #'eieio--slot-override--set-closql-slot-props)
 
 ;;; Database
 
