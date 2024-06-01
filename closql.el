@@ -363,7 +363,7 @@
   (let (alist)
     (dolist (slot (eieio-class-slots (eieio--object-class obj)))
       (setq  slot (cl--slot-descriptor-name slot))
-      (when-let ((table (closql--slot-table obj slot)))
+      (when (closql--slot-table obj slot)
         (push (cons slot (closql-oref obj slot)) alist)
         (closql--oset obj slot eieio--unbound)))
     (closql-with-transaction db
