@@ -436,12 +436,8 @@
            (and pred (closql-where-class-in pred db))
            (oref-default class closql-primary-key)))
 
-(defun closql--table-columns (db table &optional prefixed)
-  (mapcar (if prefixed
-              (let ((prefix (if (stringp prefixed) prefixed table)))
-                (lambda (col) (intern (format "%s:%s" prefix (cadr col)))))
-            #'cadr)
-          (emacsql db [:pragma (funcall table-info $i1)] table)))
+(defun closql--table-columns (db table)
+  (mapcar #'cadr (emacsql db [:pragma (funcall table-info $i1)] table)))
 
 (defun closql--db-get-version (db)
   (caar (emacsql db [:pragma user-version])))
