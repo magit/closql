@@ -224,10 +224,8 @@
   (closql--slot-get obj slot :closql-class))
 
 (defun closql--slot-table (obj slot)
-  (let ((tbl (closql--slot-get obj slot :closql-table)))
-    (and tbl (intern (string-replace
-                      "-" "_"
-                      (symbol-name (if (symbolp tbl) tbl (car tbl))))))))
+  (and-let* ((tbl (closql--slot-get obj slot :closql-table)))
+    (if (symbolp tbl) tbl (car tbl))))
 
 (defun closql--slot-get (object-or-class slot prop)
   (cdr (assq prop (closql--slot-properties object-or-class slot))))
@@ -613,8 +611,7 @@
   (let ((tables (closql--slot-get obj slot :closql-table)))
     (unless (listp tables)
       (error "%s isn't an indirect slot" slot))
-    (list (intern (string-replace "-" "_" (symbol-name (nth 0 tables))))
-          (intern (string-replace "-" "_" (symbol-name (nth 1 tables)))))))
+    tables))
 
 ;;; Utilities
 
