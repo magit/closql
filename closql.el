@@ -97,17 +97,17 @@
            ((not (eq value eieio--unbound)) value)
            ((setq class (closql--slot-class obj slot))
             (aset obj c
-                  (mapcar (lambda (row) (closql--remake-instance class db row))
-                          (emacsql db `[:select * :from $i1
-                                        :where (= $i2 $s3)
-                                        :order-by
-                                        ,(or (oref-default class closql-order-by)
-                                             [(asc $i4)])]
-                                   (oref-default class closql-table)
-                                   (oref-default class closql-foreign-key)
-                                   (closql--oref
-                                    obj (oref-default obj closql-primary-key))
-                                   (oref-default class closql-primary-key)))))
+                  (closql--remake-instances class db
+                    (emacsql db `[:select * :from $i1
+                                  :where (= $i2 $s3)
+                                  :order-by
+                                  ,(or (oref-default class closql-order-by)
+                                       [(asc $i4)])]
+                             (oref-default class closql-table)
+                             (oref-default class closql-foreign-key)
+                             (closql--oref
+                              obj (oref-default obj closql-primary-key))
+                             (oref-default class closql-primary-key)))))
            ((setq table (closql--slot-table obj slot))
             (let ((columns (closql--table-columns db table)))
               (aset obj c
@@ -453,6 +453,12 @@
     (when resolve
       (closql--resolve-slots obj))
     obj))
+
+(defun closql--remake-instances (class db rows)
+  (declare (indent defun))
+  (mapcar (lambda (row)
+            (closql--remake-instance class db row))
+          rows))
 
 (cl-defmethod closql--resolve-slots ((obj closql-object))
   (dolist (slot (eieio-class-slots (eieio--object-class obj)))
