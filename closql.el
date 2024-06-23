@@ -98,13 +98,11 @@
            ((setq class (closql--slot-class obj slot))
             (aset obj c
                   (mapcar (lambda (row) (closql--remake-instance class db row))
-                          (emacsql db (vconcat
-                                       [:select * :from $i1
-                                        :where (= $i2 $s3)]
-                                       (vector
+                          (emacsql db `[:select * :from $i1
+                                        :where (= $i2 $s3)
                                         :order-by
-                                        (or (oref-default class closql-order-by)
-                                            [(asc $i4)])))
+                                        ,(or (oref-default class closql-order-by)
+                                             [(asc $i4)])]
                                    (oref-default class closql-table)
                                    (oref-default class closql-foreign-key)
                                    (closql--oref
@@ -183,9 +181,8 @@
                 (cond
                  ((and elt1 (or (not elt2) (string< key1 key2)))
                   (apply #'emacsql db
-                         (vconcat
-                          [:delete-from $i1 :where]
-                          (closql--where-equal (cons id elt1) 1))
+                         `[:delete-from $i1
+                           :where ,(closql--where-equal (cons id elt1) 1)]
                          table
                          (cl-mapcan #'list columns (cons id elt1)))
                   (pop list1))
@@ -422,12 +419,11 @@
   (unless class
     (setq class (oref-default db object-class)))
   (emacsql db
-           (vconcat [:select $i1 :from $i2]
-                    (and pred
-                         [:where class :in $v3])
-                    (if-let ((order (oref-default class closql-order-by)))
-                        (vector :order-by order)
-                      [:order-by [(asc $i4)]]))
+           `[:select $i1 :from $i2
+             ,@(and pred [:where class :in $v3])
+             ,@(if-let ((order (oref-default class closql-order-by)))
+                   (list :order-by order)
+                 '(:order-by [(asc $i4)]))]
            select
            (oref-default class closql-table)
            (and pred (closql-where-class-in pred db))
