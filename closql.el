@@ -205,8 +205,7 @@
                   (emacsql db [:insert-into $i1 :values $v2]
                            table (vconcat (cons id elt2)))
                   (pop list2)))))))))
-     (t
-      (emacsql db [:update $i1 :set (= $i2 $s3) :where (= $i4 $s5)]
+     ((emacsql db [:update $i1 :set (= $i2 $s3) :where (= $i4 $s5)]
                (oref-default obj closql-table)
                slot
                (if (eq value eieio--unbound) 'eieio-unbound value)
