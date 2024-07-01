@@ -120,10 +120,13 @@
                                      (closql--oref
                                       obj (oref-default obj closql-primary-key))
                                      (cadr columns))))))
-           ((slot-unbound obj (eieio--object-class obj) slot 'oref))))
+           ((closql-dref obj slot))))
       (if-let ((c (eieio--class-slot-name-index class slot)))
           (aref (eieio--class-class-allocation-values class) c)
         (slot-missing obj slot 'oref)))))
+
+(cl-defgeneric closql-dref (obj slot)
+  (slot-unbound obj (eieio--object-class obj) slot 'oref))
 
 ;;;; Oset
 
@@ -141,17 +144,18 @@
   (let ((class (eieio--object-class obj)))
     (if-let ((c (eieio--slot-name-index class slot)))
         (progn (eieio--validate-slot-value class c value slot)
-               (when-let (((not (eq slot 'closql-database)))
-                          (db (closql--oref obj 'closql-database)))
-                 (closql--dset db obj slot value))
+               (when (and (not (eq slot 'closql-database))
+                          (closql--oref obj 'closql-database))
+                 (closql-dset obj slot value))
                (aset obj c value))
       (if-let ((c (eieio--class-slot-name-index class slot)))
           (progn (eieio--validate-class-slot-value class c value slot)
                  (aset (eieio--class-class-allocation-values class) c value))
         (slot-missing obj slot 'oset value)))))
 
-(defun closql--dset (db obj slot value)
-  (let* ((key   (oref-default obj closql-primary-key))
+(cl-defgeneric closql-dset (obj slot value)
+  (let* ((db    (closql--oref obj 'closql-database))
+         (key   (oref-default obj closql-primary-key))
          (id    (closql--oref obj key))
          (class (closql--slot-class obj slot))
          (table (closql--slot-table obj slot)))
@@ -372,7 +376,7 @@
                                    class))                     ; Emacs 27+
                                 values))))
       (pcase-dolist (`(,slot . ,value) alist)
-        (closql--dset db obj slot value))))
+        (closql-dset obj slot value))))
   obj)
 
 (cl-defmethod closql-delete ((obj closql-object))
