@@ -136,12 +136,7 @@
                 (closql--oref obj (closql--oref-default obj 'closql-primary-key))
                 (cadr columns))))))
      ((setq tables (closql--slot-tables obj slot))
-      (pcase-let*
-          ((`(,slot-table ,data-table) tables)
-           (`(,where ,slot-join) (closql--table-columns db slot-table))
-           (`(,_ . ,select)      (closql--table-columns db data-table))
-           (data-join (car select))
-           (object-id (closql--oref obj (oref-default obj closql-primary-key))))
+      (pcase-let ((`(,slot-table ,data-table) tables))
         (aset obj c
               (mapcar
                #'cdr
@@ -149,12 +144,15 @@
                 db [:select $i1 :from $i2
                     :join $i3 :on (= $i4 $i5)
                     :where (= $i6 $s7)
-                    :order-by [(asc $i8)]]
+                    :order-by [(asc id)]]
                 (intern (format "%s:*" data-table))
                 data-table slot-table
-                (intern (format "%s:%s" slot-table slot-join))
-                (intern (format "%s:%s" data-table data-join))
-                where object-id (car select))))))
+                (intern (format "%s:id" slot-table))
+                (intern (format "%s:id" data-table))
+                (intern (format "%s:%s" slot-table
+                                (closql--oref-default obj 'closql-table)))
+                (closql--oref obj (closql--oref-default obj 'closql-primary-key))
+                (closql--oref obj 'id))))))
      ((slot-unbound obj (eieio--object-class obj) slot 'oref)))))
 
 ;;;; Oset
