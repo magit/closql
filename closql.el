@@ -138,20 +138,23 @@
      ((setq tables (closql--slot-tables obj slot))
       (pcase-let*
           ((`(,slot-table ,data-table) tables)
-           (`(,where ,slot-join)           (closql--table-columns db slot-table))
-           (`(,_     ,data-join . ,select) (closql--table-columns db data-table))
+           (`(,where ,slot-join) (closql--table-columns db slot-table))
+           (`(,_ . ,select)      (closql--table-columns db data-table))
+           (data-join (car select))
            (object-id (closql--oref obj (oref-default obj closql-primary-key))))
         (aset obj c
-              (emacsql
-               db [:select $i1 :from $i2
-                   :join $i3 :on (= $i4 $i5)
-                   :where (= $i6 $s7)
-                   :order-by [(asc $i8)]]
-               (vconcat select)
-               data-table slot-table
-               (intern (format "%s:%s" slot-table slot-join))
-               (intern (format "%s:%s" data-table data-join))
-               where object-id (car select)))))
+              (mapcar
+               #'cdr
+               (emacsql
+                db [:select $i1 :from $i2
+                    :join $i3 :on (= $i4 $i5)
+                    :where (= $i6 $s7)
+                    :order-by [(asc $i8)]]
+                (intern (format "%s:*" data-table))
+                data-table slot-table
+                (intern (format "%s:%s" slot-table slot-join))
+                (intern (format "%s:%s" data-table data-join))
+                where object-id (car select))))))
      ((slot-unbound obj (eieio--object-class obj) slot 'oref)))))
 
 ;;;; Oset
