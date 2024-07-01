@@ -86,6 +86,13 @@
 (defun closql--oref (obj slot)
   (aref obj (eieio--slot-name-index (eieio--object-class obj) slot)))
 
+(defun closql--oref-default (class slot)
+  (let ((class (if (symbolp class)
+                   (cl--find-class class)
+                 (eieio--object-class class))))
+    (aref (eieio--class-class-allocation-values class)
+          (eieio--class-slot-name-index class slot))))
+
 (defun closql-oref (obj slot)
   (cl-check-type slot symbol)
   (let ((class (eieio--object-class obj)))
@@ -109,12 +116,12 @@
               (emacsql
                db `[:select * :from $i1
                     :where (= $i2 $s3)
-                    :order-by ,(or (oref-default class closql-order-by)
+                    :order-by ,(or (closql--oref-default class 'closql-order-by)
                                    [(asc $i4)])]
-               (oref-default class closql-table)
-               (oref-default class closql-foreign-key)
-               (closql--oref obj (oref-default obj closql-primary-key))
-               (oref-default class closql-primary-key)))))
+               (closql--oref-default class 'closql-table)
+               (closql--oref-default class 'closql-foreign-key)
+               (closql--oref obj (closql--oref-default obj 'closql-primary-key))
+               (closql--oref-default class 'closql-primary-key)))))
      ((setq table (closql--slot-table obj slot))
       (let ((columns (closql--table-columns db table)))
         (aset obj c
@@ -126,7 +133,7 @@
                     :order-by [(asc $i4)]]
                 table
                 (car columns)
-                (closql--oref obj (oref-default obj closql-primary-key))
+                (closql--oref obj (closql--oref-default obj 'closql-primary-key))
                 (cadr columns))))))
      ((slot-unbound obj (eieio--object-class obj) slot 'oref)))))
 
