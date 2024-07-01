@@ -186,13 +186,12 @@
          (key   (oref-default obj closql-primary-key))
          (id    (closql--oref obj key))
          (props (closql--slot-properties obj slot))
-         (table (alist-get :closql-table props)))
+         (table (alist-get :closql-table props))
+         (tables (alist-get :closql-tables props)))
     (cond
      ((alist-get :closql-class props)
       (error "Not implemented for closql-class slots: oset"))
-     ((alist-get :closql-tables props)
-      (error "Not implemented for closql-tables slots: oset"))
-     (table
+     ((or table (setq table (car tables)))
       (closql-with-transaction db
         (let ((columns (closql--table-columns db table)))
           ;; Caller might have modified value in place.
@@ -200,9 +199,15 @@
           (let ((list1 (closql-oref obj slot))
                 (list2 value)
                 elt1 elt2)
-            (when (length= columns 2)
-              (setq list1 (mapcar #'list list1))
-              (setq list2 (mapcar #'list list2)))
+            (cond (tables
+                   (setq list1 (mapcar (lambda (e) (list (car e))) list1))
+                   (setq list2 (mapcar (if (atom (car list2))
+                                           #'list
+                                         (lambda (e) (list (car e))))
+                                       list2)))
+                  ((length= columns 2)
+                   (setq list1 (mapcar #'list list1))
+                   (setq list2 (mapcar #'list list2))))
             ;; `list2' may not be sorted at all and `list1' has to
             ;; be sorted because Elisp and SQLite sort differently.
             (setq list1 (cl-sort list1 #'string< :key #'car))
