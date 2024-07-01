@@ -108,9 +108,10 @@
 (cl-defgeneric closql-dref (obj slot)
   (let ((c (eieio--slot-name-index (eieio--object-class obj) slot))
         (db (closql--oref obj 'closql-database))
+        (props (closql--slot-properties obj slot))
         class table tables)
     (cond
-     ((setq class (closql--slot-class obj slot))
+     ((setq class (alist-get :closql-class props))
       (aset obj c
             (closql--remake-instances class db
               (emacsql
@@ -122,7 +123,7 @@
                (closql--oref-default class 'closql-foreign-key)
                (closql--oref obj (closql--oref-default obj 'closql-primary-key))
                (closql--oref-default class 'closql-primary-key)))))
-     ((setq table (closql--slot-table obj slot))
+     ((setq table (alist-get :closql-table props))
       (let ((columns (closql--table-columns db table)))
         (aset obj c
               (mapcar
@@ -135,7 +136,7 @@
                 (car columns)
                 (closql--oref obj (closql--oref-default obj 'closql-primary-key))
                 (cadr columns))))))
-     ((setq tables (closql--slot-tables obj slot))
+     ((setq tables (alist-get :closql-tables props))
       (pcase-let ((`(,slot-table ,data-table) tables))
         (aset obj c
               (mapcar
@@ -184,12 +185,12 @@
   (let* ((db    (closql--oref obj 'closql-database))
          (key   (oref-default obj closql-primary-key))
          (id    (closql--oref obj key))
-         (class (closql--slot-class obj slot))
-         (table (closql--slot-table obj slot)))
+         (props (closql--slot-properties obj slot))
+         (table (alist-get :closql-table props)))
     (cond
-     (class
+     ((alist-get :closql-class props)
       (error "Not implemented for closql-class slots: oset"))
-     ((closql--slot-tables obj slot)
+     ((alist-get :closql-tables props)
       (error "Not implemented for closql-tables slots: oset"))
      (table
       (closql-with-transaction db
@@ -245,18 +246,6 @@
                key id)))))
 
 ;;;; Slot Properties
-
-(defun closql--slot-class (obj slot)
-  (closql--slot-get obj slot :closql-class))
-
-(defun closql--slot-table (obj slot)
-  (closql--slot-get obj slot :closql-table))
-
-(defun closql--slot-tables (obj slot)
-  (closql--slot-get obj slot :closql-tables))
-
-(defun closql--slot-get (object-or-class slot prop)
-  (cdr (assq prop (closql--slot-properties object-or-class slot))))
 
 (defun closql--slot-properties (object-or-class slot)
   (and-let* ((desc (cl-find slot
@@ -389,7 +378,7 @@
   (let (alist)
     (dolist (slot (eieio-class-slots (eieio--object-class obj)))
       (setq  slot (cl--slot-descriptor-name slot))
-      (when (closql--slot-table obj slot)
+      (when (alist-get :closql-table (closql--slot-properties obj slot))
         (push (cons slot (closql-oref obj slot)) alist)
         (closql--oset obj slot eieio--unbound)))
     (closql-with-transaction db
@@ -498,8 +487,9 @@
   (dolist (slot (eieio-class-slots (eieio--object-class obj)))
     (setq  slot (cl--slot-descriptor-name slot))
     (when (and (not (slot-boundp obj slot))
-               (or (closql--slot-class obj slot)
-                   (closql--slot-table obj slot)))
+               (let ((props (closql--slot-properties obj slot)))
+                 (or (alist-get :closql-class props)
+                     (alist-get :closql-table props))))
       (closql--oset obj slot (closql-oref obj slot)))))
 
 (defun closql--intern-unbound (row)
