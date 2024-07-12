@@ -8,7 +8,7 @@
 
 ;; Package-Requires: (
 ;;     (emacs "26.1")
-;;     (compat "29.1.4.5")
+;;     (compat "30.0.0.0")
 ;;     (emacsql "20240124"))
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
