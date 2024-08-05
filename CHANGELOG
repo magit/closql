@@ -1,4 +1,28 @@
 # -*- mode: org -*-
+* v2.0.0    UNRELEASED
+
+- Dropped support for Emacs 25.  22f67f5
+
+- Database classes no longer derive from a connector class.  c3b34a6
+
+- Added two new generic functions ~closql-dref~ and ~closql-dset~, which
+  are used by our advices to ~eieio-oref~ and ~eieio-oset~, when they deal
+  with slots whose values aren't completely stored in the object's
+  primary table.  This makes it possible to implement slot-specific
+  behavior.  296a356, 27aa7e5
+
+- Originally the ~:closql-table~ slot property was used for slots that
+  involved the use of two tables, but later it was additionally abused
+  for slots that involve three tables.  Now such slots use a new slot
+  property, ~:closql-tables~.  The values of these slots can now be
+  accessed using ~oref,~ and the old hack ~closql--iref~ has been removed.
+
+- The value of ~:closql-tables~ slots now begin with the id.  dae0256
+
+- Accessing the value of indirect slots is much faster now, and the
+  value is cached, making repeated slot access even faster.  09ad40f,
+  dc8cacb
+
 * v1.2.1    2022-02-16
 
 - Refreshed metadata.
