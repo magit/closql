@@ -1,5 +1,5 @@
 # -*- mode: org -*-
-* v2.0.0    UNRELEASED
+* v2.0.0    2024-08-08
 
 - Dropped support for Emacs 25.  22f67f5
 
