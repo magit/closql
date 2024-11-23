@@ -570,15 +570,15 @@
       (vconcat abbrevs)))
    ((vconcat
      (mapcar #'closql--abbrev-class
-             (cl-mapcan (lambda (sym)
-                          (let ((str (symbol-name sym)))
-                            (cond ((string-suffix-p "--eieio-childp" str)
-                                   (closql--list-subclasses
-                                    (intern (substring str 0 -14)) nil))
-                                  ((string-suffix-p "-p" str)
-                                   (list (intern (substring str 0 -2))))
-                                  ((list sym)))))
-                        args))))))
+             (mapcan (lambda (sym)
+                       (let ((str (symbol-name sym)))
+                         (cond ((string-suffix-p "--eieio-childp" str)
+                                (closql--list-subclasses
+                                 (intern (substring str 0 -14)) nil))
+                               ((string-suffix-p "-p" str)
+                                (list (intern (substring str 0 -2))))
+                               ((list sym)))))
+                     args))))))
 
 (defun closql--list-subclasses (class &optional result)
   (unless (class-abstract-p class)
@@ -597,7 +597,7 @@
            (nconc (and (not (class-abstract-p class)) (list abbrev))
                   (and wildcards children
                        (list (if abbrev (intern (format "%s*" abbrev)) '*)))
-                  (cl-mapcan #'types children)))))
+                  (mapcan #'types children)))))
     (sort (types class) #'string<)))
 
 (cl-defmethod closql--set-object-class ((db closql-database) obj class)
