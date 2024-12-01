@@ -10,7 +10,7 @@
 ;; Package-Requires: (
 ;;     (emacs "26.1")
 ;;     (compat "30.0.0.0")
-;;     (emacsql "4.0.0"))
+;;     (emacsql "4.1.0"))
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -41,7 +41,7 @@
 (require 'eieio)
 (require 'eieio-base)
 (require 'emacsql)
-(require 'emacsql-sqlite-common)
+(require 'emacsql-sqlite)
 
 (eval-when-compile (require 'subr-x))
 
@@ -315,9 +315,6 @@
                   (conn (make-instance connection-class :file file))
                   (db (make-instance class))) ; ignores slot arguments
              (oset db connection conn)
-             (when (and (slot-boundp conn 'handle)
-                        (processp (oref conn handle)))
-               (set-process-query-on-exit-flag (oref conn handle) nil))
              (emacsql conn [:pragma (= foreign-keys on)])
              (if (not (emacsql-sqlite-list-tables db))
                  (closql--db-create-schema db)
