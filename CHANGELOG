@@ -1,5 +1,5 @@
 # -*- mode: org -*-
-* v2.1.0    UNRELEASED
+* v2.1.0    2024-12-01
 
 - Adjusted to take advantage of EmacSQL v4.1.0.
 
