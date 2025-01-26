@@ -1,4 +1,8 @@
 # -*- mode: org -*-
+* v2.2.0    2025-01-26
+
+- ~closql-dset~ can now be told to ignore unknown connections.  ae8e78f
+
 * v2.1.0    2024-12-01
 
 - Adjusted to take advantage of EmacSQL v4.1.0.
