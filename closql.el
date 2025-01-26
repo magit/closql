@@ -182,7 +182,7 @@
                  (aset (eieio--class-class-allocation-values class) c value))
         (slot-missing obj slot 'oset value)))))
 
-(cl-defgeneric closql-dset (obj slot value)
+(cl-defgeneric closql-dset (obj slot value &optional drop-unknown)
   (let* ((db    (closql--oref obj 'closql-database))
          (key   (oref-default obj closql-primary-key))
          (id    (closql--oref obj key))
@@ -240,6 +240,11 @@
                      (cdr  elt1)
                      (cdr  elt2)))
                   (pop list1)
+                  (pop list2))
+                 (drop-unknown
+                  (ignore-errors
+                    (emacsql db [:insert-into $i1 :values $v2]
+                             table (vconcat (cons id elt2))))
                   (pop list2))
                  (t
                   (emacsql db [:insert-into $i1 :values $v2]
