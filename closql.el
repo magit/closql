@@ -555,7 +555,7 @@
       (mapc (lambda (arg)
               (let ((str (symbol-name arg)))
                 (unless (string-match "\\`\\(!\\)?\\([^*]+\\)\\(\\*\\)?\\'" str)
-                  (error "closql-where-class-in: invalid type: %s" arg))
+                  (error "`closql-where-class-in': invalid type: %s" arg))
                 (let* ((exclude (match-beginning 1))
                        (a (intern (match-string 2 str)))
                        (a (cond ((match-beginning 3)
