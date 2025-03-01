@@ -1,4 +1,8 @@
 # -*- mode: org -*-
+* v2.2.1    2025-03-01
+
+Thoughts and whitespace.
+
 * v2.2.0    2025-01-26
 
 - ~closql-dset~ can now be told to ignore unknown connections.  ae8e78f
