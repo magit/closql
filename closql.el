@@ -277,7 +277,7 @@
     (:after (cname _superclasses slots _options) closql-object)
   "Handle additional slot properties used by `closql-object' derived classes."
   (when-let* ((class (cl--find-class cname))
-              ((child-of-class-p class 'closql-object)))
+              (_(child-of-class-p class 'closql-object)))
     (pcase-dolist (`(,name . ,slot) slots)
       (let ((desc (cl-find name
                            (cl-coerce (eieio--class-slots class) 'list)
