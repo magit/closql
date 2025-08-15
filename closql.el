@@ -8,9 +8,9 @@
 
 ;; Package-Version: 2.2.2
 ;; Package-Requires: (
-;;     (emacs "26.1")
-;;     (compat "30.1")
-;;     (emacsql "4.3.1"))
+;;     (emacs   "28.1")
+;;     (compat  "30.1")
+;;     (emacsql  "4.3"))
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -44,10 +44,6 @@
 (require 'emacsql-sqlite)
 
 (eval-when-compile (require 'subr-x))
-
-(eval-and-compile
-  (unless (boundp 'eieio--unbound) ; New name since Emacs 28.1.
-    (defvaralias 'eieio--unbound 'eieio-unbound nil)))
 
 (eval-when-compile
   (cl-pushnew 'connection eieio--known-slot-names))
@@ -398,11 +394,7 @@
                (pcase-let ((`(,class ,_db . ,values)
                             (closql--intern-unbound
                              (closql--coerce obj 'list))))
-                 (vconcat (cons (closql--abbrev-class
-                                 (if (eieio--class-p class)    ; see 7db24ab
-                                     (eieio--class-name class) ; Emacs 26
-                                   class))                     ; Emacs 27+
-                                values))))
+                 (vconcat (cons (closql--abbrev-class class) values))))
       (pcase-dolist (`(,slot . ,value) alist)
         (closql-dset obj slot value))))
   obj)
