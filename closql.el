@@ -6,11 +6,11 @@
 ;; Homepage: https://github.com/emacscollective/closql
 ;; Keywords: extensions
 
-;; Package-Version: 2.2.2
+;; Package-Version: 2.3.0
 ;; Package-Requires: (
-;;     (emacs   "28.1")
-;;     (compat  "30.1")
-;;     (emacsql  "4.3"))
+;;     (emacs "28.1")
+;;     (compat "30.1")
+;;     (emacsql "4.3"))
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 

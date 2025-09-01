@@ -1,5 +1,5 @@
 # -*- mode: org -*-
-* v2.3.0    UNRELEASED
+* v2.3.0    2025-09-01
 
 Dropped support for Emacs 26 and 27.
 
