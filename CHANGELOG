@@ -1,4 +1,8 @@
 # -*- mode: org -*-
+* v2.3.1    2025-10-11
+
+Thoughts and whitespace.
+
 * v2.3.0    2025-09-01
 
 Dropped support for Emacs 26 and 27.
