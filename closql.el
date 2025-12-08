@@ -468,13 +468,16 @@
                                        db row &optional resolve)
   (pcase-let*
       ((`(,abbrev . ,values) (closql--extern-unbound row))
-       (class-obj (eieio--class-object (closql--expand-abbrev class abbrev)))
+       (class-sym (closql--expand-abbrev class abbrev))
+       (class-obj (eieio--class-object class-sym))
        (obj (copy-sequence (eieio--class-default-object-cache class-obj)))
        (values (apply #'vector (cons db values))))
     (dotimes (i (length (eieio--class-slots class-obj)))
       (aset obj (1+ i) (aref values i)))
     (when resolve
       (closql--resolve-slots obj))
+    (when eieio-backward-compatibility
+      (aset obj 0 class-sym))
     obj))
 
 (defun closql--remake-instances (class db rows)
