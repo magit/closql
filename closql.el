@@ -510,6 +510,9 @@
                     (vector (make-vector length -1)))
                (dotimes (i length)
                  (aset vector i (aref object i)))
+               ;; Do not assume eieio-backward-compatibility is enabled.
+               (when (eieio--class-p (aref vector 0))
+                 (aset vector 0 (eieio--class-name (aref vector 0))))
                vector)
              type))
 
