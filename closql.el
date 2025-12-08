@@ -506,7 +506,12 @@
   (cl-coerce (let* ((length (length object))
                     (vector (make-vector length -1)))
                (dotimes (i length)
-                 (aset vector i (aref object i)))
+                 (let ((elt (aref object i)))
+                   (aset vector i
+                         ;; In Emacs 30+, slot 0 is a class object, not a symbol.
+                         (if (and (= i 0) (eieio--class-p elt))
+                             (eieio--class-name elt)
+                           elt))))
                vector)
              type))
 
