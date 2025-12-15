@@ -258,9 +258,9 @@
 ;;;; Slot Properties
 
 (defun closql--slot-properties (object-or-class slot)
-  (and-let* ((desc (cl-find slot
-                            (closql--object-slots object-or-class)
-                            :key #'cl--slot-descriptor-name)))
+  (and-let ((desc (cl-find slot
+                           (closql--object-slots object-or-class)
+                           :key #'cl--slot-descriptor-name)))
     (cl--slot-descriptor-props desc)))
 
 (defun closql--object-slots (object-or-class)
@@ -360,7 +360,7 @@
              (oref-default db name) data-version code-version))))
 
 (cl-defmethod emacsql-live-p ((db closql-database))
-  (and-let* ((conn (oref db connection)))
+  (and-let ((conn (oref db connection)))
     (emacsql-live-p conn)))
 
 (cl-defmethod emacsql-enable-debugging ((db closql-database))
@@ -420,11 +420,11 @@
 (cl-defmethod closql-get ((db closql-database) ident &optional class resolve)
   (unless class
     (setq class (oref-default db object-class)))
-  (and-let* ((row (car (emacsql db [:select * :from $i1
-                                    :where (= $i2 $s3)]
-                                (oref-default class closql-table)
-                                (oref-default class closql-primary-key)
-                                ident))))
+  (and-let ((row (car (emacsql db [:select * :from $i1
+                                   :where (= $i2 $s3)]
+                               (oref-default class closql-table)
+                               (oref-default class closql-primary-key)
+                               ident))))
     (closql--remake-instance class db row resolve)))
 
 (cl-defmethod closql-query ((db closql-database) &optional select pred class)
@@ -637,6 +637,10 @@ define a similar function under a more appropriate name such as
 ;;; _
 (provide 'closql)
 ;; Local Variables:
+;; read-symbol-shorthands: (
+;;   ("and-let"  . "cond-let--and-let")
+;;   ("if-let"   . "cond-let--if-let")
+;;   ("when-let" . "cond-let--when-let"))
 ;; indent-tabs-mode: nil
 ;; End:
 ;;; closql.el ends here
