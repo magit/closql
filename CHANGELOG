@@ -1,4 +1,10 @@
 # -*- mode: org -*-
+* v2.4.0    UNRELEASED
+
+- Neither ignore nor assume ~eieio-backward-compatibility~.  #11
+
+- Various build improvements.
+
 * v2.3.2    2025-11-01
 
 Thoughts and whitespace.
