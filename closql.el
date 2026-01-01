@@ -637,10 +637,10 @@ define a similar function under a more appropriate name such as
 ;;; _
 (provide 'closql)
 ;; Local Variables:
+;; indent-tabs-mode: nil
 ;; read-symbol-shorthands: (
 ;;   ("and-let"  . "cond-let--and-let")
 ;;   ("if-let"   . "cond-let--if-let")
 ;;   ("when-let" . "cond-let--when-let"))
-;; indent-tabs-mode: nil
 ;; End:
 ;;; closql.el ends here
