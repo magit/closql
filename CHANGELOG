@@ -1,5 +1,5 @@
 # -*- mode: org -*-
-* v2.4.0    UNRELEASED
+* v2.4.0    2026-01-01
 
 - Neither ignore nor assume ~eieio-backward-compatibility~.  #11
 
