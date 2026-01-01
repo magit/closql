@@ -218,37 +218,37 @@
                (let ((key1 (car elt1))
                      (key2 (car elt2)))
                  (cond
-                  ((and elt1 (or (not elt2) (string< key1 key2)))
-                   (apply #'emacsql db
-                          `[:delete-from $i1
-                            :where ,(closql--where-equal (cons id elt1) 1)]
-                          table
-                          (cl-mapcan #'list columns (cons id elt1)))
-                   (pop list1))
-                  ((string= key1 key2)
-                   (unless (equal elt1 elt2)
-                     (cl-mapc
-                      (lambda (col val1 val2)
-                        (unless (equal val1 val2)
-                          (emacsql db [:update $i1 :set (= $i2 $s3)
-                                       :where (and (= $i4 $s5) (= $i6 $s7))]
-                                   table col val2
-                                   (car  columns) id
-                                   (cadr columns) key2)))
-                      (cddr columns)
-                      (cdr  elt1)
-                      (cdr  elt2)))
-                   (pop list1)
-                   (pop list2))
-                  (drop-unknown
-                   (ignore-errors
-                     (emacsql db [:insert-into $i1 :values $v2]
-                              table (vconcat (cons id elt2))))
-                   (pop list2))
-                  (t
-                   (emacsql db [:insert-into $i1 :values $v2]
-                            table (vconcat (cons id elt2)))
-                   (pop list2)))))))))
+                   ((and elt1 (or (not elt2) (string< key1 key2)))
+                    (apply #'emacsql db
+                           `[:delete-from $i1
+                             :where ,(closql--where-equal (cons id elt1) 1)]
+                           table
+                           (cl-mapcan #'list columns (cons id elt1)))
+                    (pop list1))
+                   ((string= key1 key2)
+                    (unless (equal elt1 elt2)
+                      (cl-mapc
+                       (lambda (col val1 val2)
+                         (unless (equal val1 val2)
+                           (emacsql db [:update $i1 :set (= $i2 $s3)
+                                        :where (and (= $i4 $s5) (= $i6 $s7))]
+                                    table col val2
+                                    (car  columns) id
+                                    (cadr columns) key2)))
+                       (cddr columns)
+                       (cdr  elt1)
+                       (cdr  elt2)))
+                    (pop list1)
+                    (pop list2))
+                   (drop-unknown
+                    (ignore-errors
+                      (emacsql db [:insert-into $i1 :values $v2]
+                               table (vconcat (cons id elt2))))
+                    (pop list2))
+                   (t
+                    (emacsql db [:insert-into $i1 :values $v2]
+                             table (vconcat (cons id elt2)))
+                    (pop list2)))))))))
       ((emacsql db [:update $i1 :set (= $i2 $s3) :where (= $i4 $s5)]
                 (oref-default obj closql-table)
                 slot
@@ -266,9 +266,9 @@
 (defun closql--object-slots (object-or-class)
   (eieio-class-slots
    (cond
-    ((eieio-object-p object-or-class) (eieio--object-class object-or-class))
-    ((eieio--class-p object-or-class) object-or-class)
-    ((find-class object-or-class 'error)))))
+     ((eieio-object-p object-or-class) (eieio--object-class object-or-class))
+     ((eieio--class-p object-or-class) object-or-class)
+     ((find-class object-or-class 'error)))))
 
 (defconst closql--slot-properties '(:closql-class :closql-table :closql-tables))
 
@@ -549,40 +549,40 @@
   (when (symbolp args)
     (setq args (list args)))
   (cond
-   ((vectorp args)
-    (unless db
-      (error "closql-where-class-in: DB cannot be nil if ARGS is a vector"))
-    (let ((class (oref-default db object-class))
-          (abbrevs nil))
-      (mapc (lambda (arg)
-              (let ((str (symbol-name arg)))
-                (unless (string-match "\\`\\(!\\)?\\([^*]+\\)\\(\\*\\)?\\'" str)
-                  (error "`closql-where-class-in': invalid type: %s" arg))
-                (let* ((exclude (match-beginning 1))
-                       (a (intern (match-string 2 str)))
-                       (a (cond ((match-beginning 3)
-                                 (closql--list-subabbrevs
-                                  (closql--expand-abbrev class a)))
-                                ((not (class-abstract-p
-                                       (closql--expand-abbrev class a)))
-                                 (list a)))))
-                  (setq abbrevs
-                        (if exclude
-                            (cl-set-difference abbrevs a)
-                          (nconc abbrevs a))))))
-            args)
-      (vconcat abbrevs)))
-   ((vconcat
-     (mapcar #'closql--abbrev-class
-             (mapcan (lambda (sym)
-                       (let ((str (symbol-name sym)))
-                         (cond ((string-suffix-p "--eieio-childp" str)
-                                (closql--list-subclasses
-                                 (intern (substring str 0 -14)) nil))
-                               ((string-suffix-p "-p" str)
-                                (list (intern (substring str 0 -2))))
-                               ((list sym)))))
-                     args))))))
+    ((vectorp args)
+     (unless db
+       (error "closql-where-class-in: DB cannot be nil if ARGS is a vector"))
+     (let ((class (oref-default db object-class))
+           (abbrevs nil))
+       (mapc (lambda (arg)
+               (let ((str (symbol-name arg)))
+                 (unless (string-match "\\`\\(!\\)?\\([^*]+\\)\\(\\*\\)?\\'" str)
+                   (error "`closql-where-class-in': invalid type: %s" arg))
+                 (let* ((exclude (match-beginning 1))
+                        (a (intern (match-string 2 str)))
+                        (a (cond ((match-beginning 3)
+                                  (closql--list-subabbrevs
+                                   (closql--expand-abbrev class a)))
+                                 ((not (class-abstract-p
+                                        (closql--expand-abbrev class a)))
+                                  (list a)))))
+                   (setq abbrevs
+                         (if exclude
+                             (cl-set-difference abbrevs a)
+                           (nconc abbrevs a))))))
+             args)
+       (vconcat abbrevs)))
+    ((vconcat
+      (mapcar #'closql--abbrev-class
+              (mapcan (lambda (sym)
+                        (let ((str (symbol-name sym)))
+                          (cond ((string-suffix-p "--eieio-childp" str)
+                                 (closql--list-subclasses
+                                  (intern (substring str 0 -14)) nil))
+                                ((string-suffix-p "-p" str)
+                                 (list (intern (substring str 0 -2))))
+                                ((list sym)))))
+                      args))))))
 
 (defun closql--list-subclasses (class &optional result)
   (unless (class-abstract-p class)
@@ -638,6 +638,7 @@ define a similar function under a more appropriate name such as
 (provide 'closql)
 ;; Local Variables:
 ;; indent-tabs-mode: nil
+;; lisp-indent-local-overrides: ((cond . 0) (interactive . 0))
 ;; read-symbol-shorthands: (
 ;;   ("and-let"  . "cond-let--and-let")
 ;;   ("if-let"   . "cond-let--if-let")
