@@ -9,7 +9,7 @@
 ;; Package-Version: 2.4.0
 ;; Package-Requires: (
 ;;     (emacs   "28.1")
-;;     (compat  "30.1")
+;;     (compat  "31.0")
 ;;     (cond-let "0.2")
 ;;     (emacsql  "4.3"))
 
@@ -210,8 +210,8 @@
                     (setq list2 (mapcar #'list list2))))
              ;; `list2' may not be sorted at all and `list1' has to
              ;; be sorted because Elisp and SQLite sort differently.
-             (setq list1 (cl-sort list1 #'string< :key #'car))
-             (setq list2 (cl-sort list2 #'string< :key #'car))
+             (setq list1 (compat-call sort list1 :lessp #'string< :key #'car))
+             (setq list2 (compat-call sort list2 :lessp #'string< :key #'car))
              (while (progn (setq elt1 (car list1))
                            (setq elt2 (car list2))
                            (or elt1 elt2))
@@ -539,10 +539,10 @@
          (mapcar (lambda (v)
                    (if v
                        (list '=
-                             (intern (format "$i%i" (cl-incf offset)))
-                             (intern (format "$s%i" (cl-incf offset))))
+                             (intern (format "$i%i" (incf offset)))
+                             (intern (format "$s%i" (incf offset))))
                      (list 'isnull
-                           (intern (format "$i%i" (1- (cl-incf offset 2)))))))
+                           (intern (format "$i%i" (1- (incf offset 2)))))))
                  value))))
 
 (defun closql-where-class-in (args &optional db)
