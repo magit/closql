@@ -202,10 +202,10 @@
                  (list2 value)
                  elt1 elt2)
              (cond (tables
-                    (setq list1 (mapcar (##list (car $)) list1))
+                    (setq list1 (mapcar (##list (car %)) list1))
                     (setq list2 (mapcar (if (atom (car list2))
                                             #'list
-                                          (##list (car $)))
+                                          (##list (car %)))
                                         list2)))
                    ((length= columns 2)
                     (setq list1 (mapcar #'list list1))
