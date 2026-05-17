@@ -11,7 +11,8 @@
 ;;     (emacs   "28.1")
 ;;     (compat  "31.0")
 ;;     (cond-let "0.2")
-;;     (emacsql  "4.3"))
+;;     (emacsql  "4.3")
+;;     (llama    "1.0"))
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -44,6 +45,7 @@
 (require 'eieio-base)
 (require 'emacsql)
 (require 'emacsql-sqlite)
+(require 'llama)
 
 (eval-when-compile (require 'subr-x))
 
@@ -200,10 +202,10 @@
                  (list2 value)
                  elt1 elt2)
              (cond (tables
-                    (setq list1 (mapcar (lambda (e) (list (car e))) list1))
+                    (setq list1 (mapcar (##list (car $)) list1))
                     (setq list2 (mapcar (if (atom (car list2))
                                             #'list
-                                          (lambda (e) (list (car e))))
+                                          (##list (car $)))
                                         list2)))
                    ((length= columns 2)
                     (setq list1 (mapcar #'list list1))
