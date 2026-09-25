@@ -47,8 +47,6 @@
 (require 'emacsql-sqlite)
 (require 'llama)
 
-(eval-when-compile (require 'subr-x))
-
 (eval-when-compile
   (cl-pushnew 'connection eieio--known-slot-names))
 
