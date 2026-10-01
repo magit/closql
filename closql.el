@@ -6,10 +6,10 @@
 ;; Homepage: https://github.com/emacscollective/closql
 ;; Keywords: extensions
 
-;; Package-Version: 2.4.1
+;; Package-Version: 2.4.2
 ;; Package-Requires: (
 ;;     (emacs   "28.1")
-;;     (compat  "31.0")
+;;     (compat  "31.1")
 ;;     (cond-let "1.1")
 ;;     (emacsql  "4.4")
 ;;     (llama    "1.0"))
