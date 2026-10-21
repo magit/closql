@@ -520,6 +520,9 @@
                vector)
              type))
 
+(cl-defmethod closql--abbrev-class ((obj closql-object))
+  (closql--abbrev-class (eieio-object-class-name obj)))
+
 (cl-defmethod closql--abbrev-class ((class (subclass closql-object)))
   (let ((name (symbol-name class))
         (prefix (oref-default class closql-class-prefix))
