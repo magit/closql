@@ -153,7 +153,7 @@
                                  (closql--oref-default obj 'closql-table)))
                  (closql--oref obj (closql--oref-default obj 'closql-primary-key))
                  (closql--oref obj 'id))))))
-      ((slot-unbound obj (eieio--object-class obj) slot 'oref)))))
+      ((eieio-barf-if-slot-unbound (aref obj c) obj slot 'oref)))))
 
 ;;;; Oset
 

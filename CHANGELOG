@@ -1,4 +1,9 @@
 # -*- mode: org -*-
+* v2.5.1    UNRELEASED
+
+- For an unbound slot, ~slot-boundp~ signaled an error, instead of
+  returning nil.
+
 * v2.5.0    2026-11-01
 
 - Added a ~closql--abbrev-class~ method for objects.
